@@ -22,44 +22,6 @@ namespace function
         void Derived2Method() {};
     };
 
-    template < class T >
-    class HasMember_FocusSetEvent
-    {
-    private:
-        using Yes = char[2];
-        using  No = char[1];
-
-        struct Fallback { int FocusSetEvent; };
-    //    struct Derived : T, Fallback { };
-
-        template < class U >
-        static No& test(decltype(U::FocusSetEvent)*);
-        template < typename U >
-        static Yes& test(U*);
-
-    public:
-        static constexpr bool RESULT1 = sizeof(test<Derived1>(nullptr)) == sizeof(Yes);
-        static constexpr bool RESULT2 = sizeof(test<Derived2>(nullptr)) == sizeof(Yes);
-    };
-
-    template < class T >
-    struct has_member_FocusSetEvent
-        : public std::integral_constant<bool, HasMember_FocusSetEvent<T>::RESULT>
-    {
-    };
-
-    template <class Arg, class ... Args>
-    constexpr int countArgs(const Arg& x, const Args& ... args)
-    {
-        return countArgs(args...) + 1;
-    }
-
-    template <typename R, typename T, typename ... Types>
-    constexpr std::integral_constant<unsigned, sizeof ...(Types)> GetArgsCount(R(T::*)(Types ...))
-    {
-        return static_cast<int>(std::integral_constant<unsigned, sizeof ...(Types)>{});
-    }
-
     template <typename DerivedT>
     void CallFunction1(std::shared_ptr<Base>& iDerived)
     {
