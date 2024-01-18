@@ -15,14 +15,14 @@ namespace callback
     class AbstractCallback : public ICallback
     {
     public:
-        AbstractCallback(TClass& iClass, TCallBack& iCallback, TArgs iArgs) :
+        AbstractCallback(TClass& iClass, TCallBack& iCallback, TArgs&& iArgs) :
         _class(iClass),
         _callback(iCallback),
         _args(iArgs)
         {
             
         }
-        virtual void operator()() override { (_class.*(_callback))(_args); }
+        virtual void operator()() override { (_class.*(_callback))(std::forward<TArgs>(_args)); }
     protected:
         TClass _class;
         TCallBack _callback;
@@ -34,9 +34,9 @@ namespace callback
     {
         using _CallBack = std::function<void()>;
     public:
-        Callback(const TClass& iClass, const TCallBack& iCallback, const TArgs&... iArgs)
+        Callback(const TClass& iClass, const TCallBack& iCallback, TArgs&&... iArgs)
         {
-            _callback = std::bind(iCallback, iClass, iArgs...);
+            _callback = std::bind(iCallback, iClass, std::forward<TArgs>(iArgs)...);
         }
 
         void operator()() override
@@ -76,7 +76,7 @@ namespace callback
     class Permission
     {
     public:
-        Permission(const Example& iClass, const TCallBack&& iCallback)
+        Permission(const Example& iClass, TCallBack&& iCallback)
         {
             if constexpr (std::is_same_v<void(Example::*)(), TCallBack>)
             {

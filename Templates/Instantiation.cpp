@@ -5,13 +5,18 @@
 namespace instantiation
 {
     template<typename ...TArgs>
-    constexpr int Instantiation::explicitCountArgs(TArgs ...args)
+    constexpr int Instantiation::ExplicitCountArgs(TArgs ...args)
     {
         return sizeof...(args);
     }
 
-    template int Instantiation::explicitCountArgs(const int);
-    template int Instantiation::explicitCountArgs(const double);
-    template int Instantiation::explicitCountArgs(const std::string);
-    template int Instantiation::explicitCountArgs(const int, const double, const std::string);
+    template int Instantiation::ExplicitCountArgs(int);
+    template int Instantiation::ExplicitCountArgs(int&);
+    template int Instantiation::ExplicitCountArgs(int&&);
+    template int Instantiation::ExplicitCountArgs(double&);
+    template int Instantiation::ExplicitCountArgs(double&&);
+    template int Instantiation::ExplicitCountArgs(std::string&);
+    template int Instantiation::ExplicitCountArgs(std::string&&);
+    template int Instantiation::ExplicitCountArgs(int&, double&, std::string&);
+    template int Instantiation::ExplicitCountArgs(int&&, double&&, std::string&&);
 }

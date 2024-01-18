@@ -17,26 +17,26 @@ namespace CRTP
     class Base
     {
     public:
-        void interface1() // 1 Cпособ
+        void Interface1() // 1 Cпособ
         {
-            static_cast<T*>(this)->implementation1();
+            static_cast<T*>(this)->Implementation1();
         };
         
-        static void interface2()
+        static void Interface2()
         {
-            T::implementation2(); // 2 Способ: static
+            T::Implementation2(); // 2 Способ: static
         };
     };
 
     class Derived : public Base<Derived>
     {
     public:
-        void implementation1()
+        void Implementation1()
         {
             std::cout << "interface1 Derived" << std::endl;
         }
         
-        static void implementation2()
+        static void Implementation2()
         {
             std::cout << "interface2 Derived" << std::endl;
         }

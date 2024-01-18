@@ -17,14 +17,14 @@
 namespace fold_expression
 {
     /// 1 Способ: Унарная правоассоциативная свёртка
-    inline constexpr auto sum(auto... args)
+    inline constexpr auto Sum(auto&&... args)
     {
         return (args + ...); // (arg1+ arg2 + arg3 + ...)
     }
 
     /// 1 Способ: Унарная левоассоциативная свёртка
     /*
-     inline constexpr auto sum(auto... args)
+     inline constexpr auto Sum(auto&&... args)
      {
          return (... + args); // (... + arg1 + arg2 + arg3)
      }
@@ -32,7 +32,7 @@ namespace fold_expression
 
     /// 1 Способ: Бинарная правоассоциативная свертка
     /*
-     inline constexpr auto sum(auto... args)
+     inline constexpr auto Sum(auto&&... args)
      {
          return (args + ... + 100); // (arg1 + arg2 + arg3 + ... + 100)
      }
@@ -40,30 +40,30 @@ namespace fold_expression
 
     /// 1 Способ: Бинарная левоассоциативная свертка
     /*
-     inline constexpr auto sum(auto... args)
+     inline constexpr auto Sum(auto&&... args)
      {
          return (100 + ... + args); // (100 + ... + arg1 + arg2 + arg3)
      }
      */
 
-    inline constexpr auto average(auto... args)
+    inline constexpr auto Average(auto&&... args) // Сокращенный шаблон
     {
-        auto s =  sum(args...);
+        auto s =  Sum(args...);
         return s / sizeof...(args);
     }
 
-    inline constexpr auto norm(auto... args)
+    inline constexpr auto Norm(auto&&... args) // Сокращенный шаблон
     {
         return std::sqrt((( args * args) + ...)); // std::sqrt(arg1 * arg1 + arg2 * arg2 + ...)
     }
 
-    inline constexpr auto pow_sum(const auto&... args)
+    inline constexpr auto Pow_Sum(auto&&... args) // Сокращенный шаблон
     {
         return (std::pow(args, 2) + ...); // arg1 * arg1 + arg2 * arg2 + ...
     }
 
     template<typename T, typename... Args>
-    void push_to_vector(std::vector<T>& v, Args&&... args)
+    void Push_To_Vector(std::vector<T>& v, Args&&... args)
     {
         //Раскрывается в последовательность выражений через запятую вида:
         //v.push_back(std::forward<Args_1>(arg1)),
@@ -74,14 +74,14 @@ namespace fold_expression
     }
 
     template<typename ...TArgs>
-    inline constexpr int countArgs(TArgs ...args)
+    inline constexpr int CountArgs(TArgs&& ...args)
     {
         return sizeof...(args);
     }
 
     // 1 Способ
     template<typename TType, typename ...TArgs>
-    inline constexpr std::integral_constant<unsigned, sizeof ...(TArgs)> countArgsFunction( TType(*function)(TArgs ...))
+    inline constexpr std::integral_constant<unsigned, sizeof ...(TArgs)> CountArgsFunction( TType(*function)(TArgs ...))
     {
        return std::integral_constant<unsigned, sizeof ...(TArgs)>{};
     }
@@ -89,13 +89,13 @@ namespace fold_expression
     // 2 Способ
     /*
      template<typename TType, typename ...TArgs>
-     constexpr unsigned countArgsFunction( TType(*function)(TArgs ...))
+     constexpr unsigned CountArgsFunction( TType(*function)(TArgs ...))
      {
          return sizeof...(TArgs);
      }
      */
 
-    inline constexpr void checkTypes(auto... args)
+    inline constexpr void CheckTypes(auto&&... args) // Сокращенный шаблон
     {
         std::cout << "check types: ";
         ((std::cout << args,
@@ -106,15 +106,15 @@ namespace fold_expression
         std::cout << std::endl;
     }
 
-    inline constexpr void print_strings(std::convertible_to<std::string_view> auto&& ...strings)
+    inline constexpr void Print_Strings(std::convertible_to<std::string_view> auto&& ...strings) // Сокращенный шаблон
     {
-        for (auto s : std::initializer_list<std::string_view>{ strings... })
+        for (const auto& s : std::initializer_list<std::string_view>{ std::forward<std::string_view>(strings)... })
             std::cout << s << ", ";
         std::cout << std::endl;
     }
 
     // C++20
-    inline constexpr void print(const auto&... args)
+    inline constexpr void Print(const auto&... args) // Сокращенный шаблон
     {
         ((std::cout << args << ", "), ...);
         std::cout << std::endl;
@@ -123,7 +123,7 @@ namespace fold_expression
     // C++17
     /*
      template <typename ...TArgs>
-     inline void print(const TArgs&... args)
+     inline void Print(const TArgs&... args)
      {
          ((std::cout << args << ", "), ...);
          std::cout << std::endl;

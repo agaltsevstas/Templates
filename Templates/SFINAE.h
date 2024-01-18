@@ -85,8 +85,8 @@ namespace SFINAE
             return number.value * number.value;
         }
     
-//        template<typename T>
-//        typename std::enable_if<std::has_begin<T>::value, T>::type Square(const T& number)
+        // template<typename T>
+        // typename std::enable_if<std::has_begin<T>::value, T>::type Square(const T& number)
     }
 
     /*
@@ -110,7 +110,7 @@ namespace SFINAE
     
         // TODO:
         template<auto Constant>
-        void convertible()
+        void Convertible()
         {
             if constexpr (std::is_convertible_v<decltype(Constant), int>)
                 std::cout << typeid(Constant).name() << " convertible to: int" << std::endl;
@@ -215,15 +215,6 @@ namespace SFINAE
                 {
                     std::cout << values << std::endl;
                 }
-            }
-        }
-        namespace CONCEPTS
-        {
-            void Print(const std::ranges::common_range auto& container)
-            {
-                for(const auto& item : container)
-                    std::cout << item << ", ";
-                std::cout << std::endl;
             }
         }
     }

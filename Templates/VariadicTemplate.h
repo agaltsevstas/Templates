@@ -24,21 +24,20 @@ namespace variadic_template
     }
 
     template<typename... TArgs>
-    inline bool CheckProperty(MeasureProperty iProperty, MeasureProperty Property, TArgs... types)
+    inline bool CheckProperty(MeasureProperty iProperty, MeasureProperty Property, TArgs&&... types)
     {
         return CheckProperty(iProperty, Property) || CheckProperty(iProperty, types...);
     }
-
     
     /// Stub-функция (заглушка) для рекурсии
     template<typename... Args>
     void stub(Args&&...) {}
 
     template<typename T, typename... TArgs>
-    inline void print(const T& first, const TArgs&... args)
+    inline void print(const T& first, TArgs&&... args)
     {
-      std::cout << first << std::endl;
-      stub(args...);
+        std::cout << first << std::endl;
+        stub(args...);
     }
 }
 

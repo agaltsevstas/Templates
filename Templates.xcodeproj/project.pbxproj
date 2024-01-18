@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		80CBEEA82B4733FC00467FD5 /* Instantiation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80CBEE9C2B4733FB00467FD5 /* Instantiation.cpp */; };
-		80CBEEA92B4733FC00467FD5 /* Templates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80CBEEA42B4733FC00467FD5 /* Templates.cpp */; };
+		80CBEEF32B591E3800467FD5 /* Templates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80CBEEE52B591E3800467FD5 /* Templates.cpp */; };
+		80CBEEF42B591E3800467FD5 /* Instantiation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80CBEEEA2B591E3800467FD5 /* Instantiation.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,18 +25,22 @@
 
 /* Begin PBXFileReference section */
 		8076FC7D2B235B230067767B /* Templates */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Templates; sourceTree = BUILT_PRODUCTS_DIR; };
-		80CBEE9C2B4733FB00467FD5 /* Instantiation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Instantiation.cpp; path = Templates/Instantiation.cpp; sourceTree = "<group>"; };
-		80CBEE9D2B4733FB00467FD5 /* FoldExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FoldExpression.h; path = Templates/FoldExpression.h; sourceTree = "<group>"; };
-		80CBEE9E2B4733FB00467FD5 /* Non-type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Non-type.h"; path = "Templates/Non-type.h"; sourceTree = "<group>"; };
-		80CBEE9F2B4733FC00467FD5 /* CRTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRTP.h; path = Templates/CRTP.h; sourceTree = "<group>"; };
-		80CBEEA02B4733FC00467FD5 /* typedef_using.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = typedef_using.h; path = Templates/typedef_using.h; sourceTree = "<group>"; };
-		80CBEEA12B4733FC00467FD5 /* VariadicTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VariadicTemplate.h; path = Templates/VariadicTemplate.h; sourceTree = "<group>"; };
-		80CBEEA22B4733FC00467FD5 /* SFINAE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SFINAE.h; path = Templates/SFINAE.h; sourceTree = "<group>"; };
-		80CBEEA32B4733FC00467FD5 /* Function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Function.h; path = Templates/Function.h; sourceTree = "<group>"; };
-		80CBEEA42B4733FC00467FD5 /* Templates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Templates.cpp; path = Templates/Templates.cpp; sourceTree = "<group>"; };
-		80CBEEA52B4733FC00467FD5 /* Specialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Specialization.h; path = Templates/Specialization.h; sourceTree = "<group>"; };
-		80CBEEA62B4733FC00467FD5 /* Callback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Callback.h; path = Templates/Callback.h; sourceTree = "<group>"; };
-		80CBEEA72B4733FC00467FD5 /* Instantiation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Instantiation.h; path = Templates/Instantiation.h; sourceTree = "<group>"; };
+		80CBEEE32B591E3800467FD5 /* CRTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRTP.h; path = Templates/CRTP.h; sourceTree = "<group>"; };
+		80CBEEE42B591E3800467FD5 /* Matching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matching.h; path = Templates/Matching.h; sourceTree = "<group>"; };
+		80CBEEE52B591E3800467FD5 /* Templates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Templates.cpp; path = Templates/Templates.cpp; sourceTree = "<group>"; };
+		80CBEEE62B591E3800467FD5 /* SFINAE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SFINAE.h; path = Templates/SFINAE.h; sourceTree = "<group>"; };
+		80CBEEE72B591E3800467FD5 /* typedef_using.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = typedef_using.h; path = Templates/typedef_using.h; sourceTree = "<group>"; };
+		80CBEEE82B591E3800467FD5 /* Auto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Auto.h; path = Templates/Auto.h; sourceTree = "<group>"; };
+		80CBEEE92B591E3800467FD5 /* VariadicTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VariadicTemplate.h; path = Templates/VariadicTemplate.h; sourceTree = "<group>"; };
+		80CBEEEA2B591E3800467FD5 /* Instantiation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Instantiation.cpp; path = Templates/Instantiation.cpp; sourceTree = "<group>"; };
+		80CBEEEB2B591E3800467FD5 /* Callback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Callback.h; path = Templates/Callback.h; sourceTree = "<group>"; };
+		80CBEEEC2B591E3800467FD5 /* Metafunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Metafunction.h; path = Templates/Metafunction.h; sourceTree = "<group>"; };
+		80CBEEED2B591E3800467FD5 /* Specialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Specialization.h; path = Templates/Specialization.h; sourceTree = "<group>"; };
+		80CBEEEE2B591E3800467FD5 /* FoldExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FoldExpression.h; path = Templates/FoldExpression.h; sourceTree = "<group>"; };
+		80CBEEEF2B591E3800467FD5 /* Non-type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Non-type.h"; path = "Templates/Non-type.h"; sourceTree = "<group>"; };
+		80CBEEF02B591E3800467FD5 /* Function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Function.h; path = Templates/Function.h; sourceTree = "<group>"; };
+		80CBEEF12B591E3800467FD5 /* Instantiation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Instantiation.h; path = Templates/Instantiation.h; sourceTree = "<group>"; };
+		80CBEEF22B591E3800467FD5 /* Concept.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Concept.h; path = Templates/Concept.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,18 +57,22 @@
 		8076FC742B235B230067767B = {
 			isa = PBXGroup;
 			children = (
-				80CBEEA62B4733FC00467FD5 /* Callback.h */,
-				80CBEE9F2B4733FC00467FD5 /* CRTP.h */,
-				80CBEE9D2B4733FB00467FD5 /* FoldExpression.h */,
-				80CBEEA32B4733FC00467FD5 /* Function.h */,
-				80CBEE9C2B4733FB00467FD5 /* Instantiation.cpp */,
-				80CBEEA72B4733FC00467FD5 /* Instantiation.h */,
-				80CBEE9E2B4733FB00467FD5 /* Non-type.h */,
-				80CBEEA22B4733FC00467FD5 /* SFINAE.h */,
-				80CBEEA52B4733FC00467FD5 /* Specialization.h */,
-				80CBEEA42B4733FC00467FD5 /* Templates.cpp */,
-				80CBEEA02B4733FC00467FD5 /* typedef_using.h */,
-				80CBEEA12B4733FC00467FD5 /* VariadicTemplate.h */,
+				80CBEEE82B591E3800467FD5 /* Auto.h */,
+				80CBEEEB2B591E3800467FD5 /* Callback.h */,
+				80CBEEF22B591E3800467FD5 /* Concept.h */,
+				80CBEEE32B591E3800467FD5 /* CRTP.h */,
+				80CBEEEE2B591E3800467FD5 /* FoldExpression.h */,
+				80CBEEF02B591E3800467FD5 /* Function.h */,
+				80CBEEEA2B591E3800467FD5 /* Instantiation.cpp */,
+				80CBEEF12B591E3800467FD5 /* Instantiation.h */,
+				80CBEEE42B591E3800467FD5 /* Matching.h */,
+				80CBEEEC2B591E3800467FD5 /* Metafunction.h */,
+				80CBEEEF2B591E3800467FD5 /* Non-type.h */,
+				80CBEEE62B591E3800467FD5 /* SFINAE.h */,
+				80CBEEED2B591E3800467FD5 /* Specialization.h */,
+				80CBEEE52B591E3800467FD5 /* Templates.cpp */,
+				80CBEEE72B591E3800467FD5 /* typedef_using.h */,
+				80CBEEE92B591E3800467FD5 /* VariadicTemplate.h */,
 				8076FC7E2B235B230067767B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -134,8 +142,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80CBEEA82B4733FC00467FD5 /* Instantiation.cpp in Sources */,
-				80CBEEA92B4733FC00467FD5 /* Templates.cpp in Sources */,
+				80CBEEF32B591E3800467FD5 /* Templates.cpp in Sources */,
+				80CBEEF42B591E3800467FD5 /* Instantiation.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,6 +262,7 @@
 		8076FC852B235B230067767B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -262,6 +271,7 @@
 		8076FC862B235B230067767B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

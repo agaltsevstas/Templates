@@ -1,15 +1,22 @@
 #include <iostream>
 
-#include "VariadicTemplate.h"
+#include "Auto.h"
 #include "Callback.h"
 #include "Instantiation.h"
+#include "Concept.h"
 #include "CRTP.h"
 #include "FoldExpression.h"
 #include "Function.h"
 #include "Non-type.h"
+#include "Matching.h"
+#include "Metafunction.h"
 #include "SFINAE.h"
 #include "Specialization.h"
 #include "typedef_using.h"
+#include "VariadicTemplate.h"
+
+#include <array>
+#include <list>
 
 /*
  Сайты: http://scrutator.me/post/2017/08/11/cpp17_lang_features_p1.aspx
@@ -21,6 +28,9 @@
         https://stackoverflow.com/questions/2351148/explicit-template-instantiation-when-is-it-used
         https://gist.github.com/sergeysablin99/1eb61b51fb58d5ae0a58ac1424c249c6
  extern template : https://isocpp.org/wiki/faq/templates#separate-template-fn-defn-from-decl
+ metafunction: https://habr.com/ru/articles/337590/
+               http://scrutator.me/post/2017/04/10/has_function_metaprogramming.aspx
+ matching: https://habr.com/ru/articles/282630/
  */
 
 
@@ -52,9 +62,11 @@
  Для методов нельзя, но это можно обойти сделать в частичном специализированном классе static метод.
  3. Основной шаблон (primary template) - vector<T>
  
- Non-type template parameter (шаблонные аргументы не являющиеся типами) или (шаблонные аргументы-константы) - в качестве аргументов шаблонов могут выступать константы времени на этапе комплияции.
- C++14: способ передать non-type template параметр с неизвестным типом была передача двух параметров – типа и значения.
- C++17: можно писать auto для non-type template параметров.
+ 4 типа шаблонов:
+ - шаблоны функций: template<typename T> T max(T &a, T &b) { return a > b ? a : b; }
+ - шаблоны классов: template<class T> class { T t; };
+ - шаблоны переменных: template<typename T> constexpr T pi = T{3.141592653589793238462643383L};
+ - Non-type параметры: template<class T, size_t N> class array. Non-type template parameter (шаблонные аргументы не являющиеся типами) или (шаблонные аргументы-константы) - в качестве аргументов шаблонов могут выступать константы времени на этапе комплияции. C++14: способ передать non-type template параметр с неизвестным типом была передача двух параметров – типа и значения. C++17: можно писать auto для non-type template параметров.
  
  Variadic Template - шаблон с заранее неизвестным числом аргументов
  Оператор многоточия или элипсис  (…), когда он стоит слева от имени параметра функции, он объявляет набор параметров (template<typename... Args>), когда стоит справа от шаблона или аргумента вызова функции, он распаковывает параметры в отдельные аргументы (Args&... args).
@@ -71,15 +83,35 @@
  Template argument deduction - способность шаблоннов определять тип передаваемых аргументов без явного указания типа: вместо foo<...>(...) можно foo(...). До C++17 при инстанцировании шаблона функции нужно было явно указывать типы аргументы: foo<...>(...)
  */
 
-void func(int a, int b, int c)
+namespace fold_expression
 {
+    void Func(int a, int b, int c)
+    {
+    }
+}
+
+/* Lambda можно передавать шаблоны только при аргументах */
+namespace LAMBDA
+{
+    void MyFunction(int&& number)
+    {
+         std::cout << "rvalue: " << number << std::endl;
+    }
+    void MyFunction(int& number)
+    {
+        std::cout << "lvalue: " << number << std::endl;
+    }
 }
 
 // Явно инстанцированная шаблонная функция/класс могут иметь копии .cpp файлах, что может тормозить сам процесс компиляции и сборки. Можно указать компилятору не инстанцировать шаблон в данной единице трансляции, для этого перед инстанцированием указать extern - это уменьшает время компиляции.
-extern template int instantiation::Instantiation::explicitCountArgs(const int);
-extern template int instantiation::Instantiation::explicitCountArgs(const double);
-extern template int instantiation::Instantiation::explicitCountArgs(const std::string);
-extern template int instantiation::Instantiation::explicitCountArgs(const int, const double, const std::string);
+extern template int instantiation::Instantiation::ExplicitCountArgs(int&);
+extern template int instantiation::Instantiation::ExplicitCountArgs(int&&);
+extern template int instantiation::Instantiation::ExplicitCountArgs(double&);
+extern template int instantiation::Instantiation::ExplicitCountArgs(double&&);
+extern template int instantiation::Instantiation::ExplicitCountArgs(std::string&);
+extern template int instantiation::Instantiation::ExplicitCountArgs(std::string&&);
+extern template int instantiation::Instantiation::ExplicitCountArgs(int&, double&, std::string&);
+extern template int instantiation::Instantiation::ExplicitCountArgs(int&&, double&&, std::string&&);
 
 int main()
 {
@@ -105,15 +137,15 @@ int main()
         using namespace instantiation;
         
         Instantiation instance;
-        auto implicitCountArguments1 = instance.implicitCountArgs(int(1));
-        auto implicitCountArguments2 = instance.implicitCountArgs(double(1.0));
-        auto implicitCountArguments3 = instance.implicitCountArgs(std::string("1.0"));
-        auto implicitCountArguments4 = instance.implicitCountArgs(int(1), double(1.0), std::string("1.0"));
+        auto implicitCountArguments1 = instance.ImplicitCountArgs(1);
+        auto implicitCountArguments2 = instance.ImplicitCountArgs(1.0);
+        auto implicitCountArguments3 = instance.ImplicitCountArgs("1.0");
+        auto implicitCountArguments4 = instance.ImplicitCountArgs(1, 1.0, "1.0");
         
-        auto explicitCountArguments1 = instance.explicitCountArgs(int(1));
-        auto explicitCountArguments2 = instance.explicitCountArgs(double(1.0));
-        auto explicitCountArguments3 = instance.explicitCountArgs(std::string("1.0"));
-        auto explicitCountArguments4 = instance.explicitCountArgs(int(1), double(1.0), std::string("1.0"));
+        //auto explicitCountArguments1 = instance.explicitCountArgs(1);
+        //auto explicitCountArguments2 = instance.explicitCountArgs(1.0);
+        //auto explicitCountArguments3 = instance.explicitCountArgs<std::string>("1.0");
+        //auto explicitCountArguments4 = instance.explicitCountArgs<int, double, std::string>(1, 1.0, "1.0");
     }
     /*
      Компилятор в приоритете выбирает более специлизированный шаблон
@@ -133,17 +165,62 @@ int main()
         Person<std::string, unsigned> stas("Stas", 23); // Полная специализация (explicit (или full) specialization)
     }
     /*
-     Non-type template parameter (шаблонные аргументы не являющиеся типами) или (шаблонные аргументы-константы) - в качестве аргументов шаблонов могут выступать константы времени на этапе комплияции.
+     Сокращенный шаблон (auto или Concept auto) - шаблонная функция, которая содержит auto в качестве типа аргумента или возвращающегося значения
+     Плюсы:
+     - упрощает синтаксис
+     - не нужно писать template
+     Минусы
+     - если забыть сделать return в функции, то функция станет void
+     - можно вернуть не тот тип
+     Решение: использовать концепты для точного возвращения нужного типа
+    */
+    {
+        auto sum1 = AUTO::GetSum(1, 2);
+        auto sum2 = AUTO::GetSum(1, 2.f);
+        auto sum3 = AUTO::Sum(1, 2);
+        auto sum4 = AUTO::Sum(1, 2.f);
+
+        // Concept
+        {
+            std::vector<int> points { 1, 2, 3, 4, 5 };
+            CONCEPT::Point point;
+
+            AUTO::CONCEPT::Print_Strings("one", std::string{ "two" });
+            AUTO::CONCEPT::Print(points);
+            
+            // auto resultReturn = CONCEPT::AUTO::NothingReturn(); // Ошибка NothingReturn ничего не возвращает
+            CONCEPT::AUTO::DrawShape(point);
+            auto shape1 = CONCEPT::AUTO::GetShape1(); // C++20, 1 Способ: точно возвращается значение и нужный тип
+            auto shape2 = CONCEPT::AUTO::GetShape2(); // C++20, 2 Способ: точно возвращается значение и нужный тип
+        }
+    }
+    /*
+     Non-type template parameter (шаблонные аргументы не являющиеся типами) - шаблонные аргументы-константы, в качестве аргументов шаблонов могут выступать константы времени на этапе комплияции.
      C++14: способ передать non-type template параметр с неизвестным типом была передача двух параметров – типа и значения.
      C++17: можно писать auto для non-type template параметров.
+     С++20: можно работать с вещественными числами
      */
     {
         using namespace non_type;
         
-        array<int, 10> a;
+        array1<int, 10> a1;
+        array2<int, 10> a2;
         
-        print<int, 10>(); // C++14: способ передать non-type template параметр с неизвестным типом была передача двух параметров – типа и значения
-        auto sum_result2 = sum<1, 2, 3>(); // C++17: можно писать auto для non-type template параметров
+        Test<10> test1;
+        // Test<10.5> test2; // Ошибка в XCode
+        
+        TConstant1<int, 10>;
+        TConstant2<10>;
+        
+        Print<int, 10>(); // C++14: способ передать non-type template параметр с неизвестным типом была передача двух параметров – типа и значения
+        
+        // С++20: вещественные числа
+        auto sum_result2 = Sum<1, 2, 3>(); // C++17: можно писать auto для non-type template параметров, вещественные числа передать нельзя
+        
+        constexpr Value<int> v1(2); // Без constexpr будет ошибка
+        constexpr Value<double> v2(2.5); // Без constexpr будет ошибка
+        auto multi1 = Multiplication<v1.value, v1>(100);
+        // auto multi2 = Multiplication<v2.value, v2>(100.0); // Ошибка в XCode
     }
     /*
      Variadic Template - шаблон с заранее неизвестным числом аргументов
@@ -170,15 +247,58 @@ int main()
         using namespace fold_expression;
         std::vector<int> numbers;
         
-        auto sum_result1 = sum(1, 2, 3);
-        auto average_result = average(1, 2, 3);
-        auto norm_result = norm(1, 2, 3);
-        auto pow_sum_result = pow_sum(1, 2, 3);
-        push_to_vector(numbers, 1, 2, 3, 4, 5);
-        auto countArguments = countArgs(1, "hello", 2.f);
-        auto countArgumentsFunction = countArgsFunction(func).value;
-        checkTypes(int(1), std::string("hello"), double(2.0));
-        print_strings("one", std::string{"two"});
+        auto sum_result1 = Sum(1, 2, 3);
+        auto average_result = Average(1, 2, 3);
+        auto norm_result = Norm(1, 2, 3);
+        auto pow_sum_result = Pow_Sum(1, 2, 3);
+        Push_To_Vector(numbers, 1, 2, 3, 4, 5);
+        auto countArguments = CountArgs(1, "hello", 2.f);
+        auto countArgumentsFunction = CountArgsFunction(Func).value;
+        CheckTypes(int(1), std::string("hello"), double(2.0));
+        Print_Strings("one", std::string{"two"});
+    }
+    // Lambda можно передавать шаблоны только при аргументах
+    {
+        using namespace LAMBDA;
+        
+        int number = 10;
+        // До C++20
+        {
+            auto Lambda = [&](auto&& number) // Сокращенный шаблон (auto)
+            {
+                MyFunction(std::forward<decltype(number)>(number));
+            };
+            
+            Lambda(10);
+            Lambda(number);
+        }
+        // C++20
+        {
+            auto Lambda = []<typename T>(T&& number)
+            {
+                 MyFunction(std::forward<T>(number));
+            };
+            
+            Lambda(10);
+            Lambda(number);
+        }
+        
+        // Переменным число параметров (variadic template)
+        auto Sum = []<typename... TArgs>(TArgs&&... args)
+        {
+            return (... + args);
+        };
+        
+        auto sum = Sum(10, 11, 12);
+        
+        // Сокращенный шаблон (auto)
+        auto Average = [&Sum](auto&&... args)
+        {
+            auto s =  Sum(args...);
+            return s / sizeof...(args);
+        };
+        
+        auto average = Average(10, 11, 12);
     }
     // callback
     {
@@ -209,6 +329,16 @@ int main()
         CallFunction2<Derived2>(derived2);
         CallFunction3(derived1);
         CallFunction3(derived2);
+    }
+    // metafunction
+    {
+        using namespace metafunction;
+        
+        auto is_same_1 = is_same<int, int32_t>::value;
+        auto is_same_2 = is_same<int, std::string>::value;
+        auto squareRes = Square<5>::value;
+        auto factorial = Factorial<5>::value;
+        auto fibonacci = Fibonacci<7>::value;
     }
     /*
      SFINAE (substitution failure is not an error) - при определении перегрузок функции ошибочные подстановки в шаблоны не вызывают ошибку компиляции, а отбрасываются из списка кандидатов на наиболее подходящую перегрузку.
@@ -261,7 +391,7 @@ int main()
                 auto square4 = CONSTEXPR::Square(number_int); // Вызов Number<int> Square(Number<int>);
                 
                 // TODO:
-                CONSTEXPR::convertible<1>();
+                CONSTEXPR::Convertible<1>();
             }
         }
         
@@ -292,9 +422,109 @@ int main()
                 CONTAINER::CONSTEXPR::Print(value);
             }
             
-            // CONCEPTS
+            /*
+             Концепт (concept) - это имя для ограничения, которое используется вместо слов class или typename в конструкции с template.
+             Ограничение — это шаблонное булево выражение. Концепты улучшают читаемость кода и облегчает поиск ошибок. Концепции можно использовать для перегрузки функций, специализации шаблонов и создания метафункций. Концепты компилируются быстрее обычного SFINAE (std::enable_if и constexpr) и условия в них можно расширять.
+             Версия C++20 вернулась обратно к двум функциям, но теперь код намного читабельнее, чем с std::enable_if.
+             requires - пользовательское ограничение
+            */
             {
-                CONTAINER::CONCEPTS::Print(numbers);
+                using namespace CONCEPT;
+
+                Point point;
+                DerivedPoint derivedPoint;
+                NoDerivedPoint noderivedPoint;
+                std::vector<Point> points = { { 2, 1 }, { 2, 2 }, { 1, 1 }, { 1, 2 } };
+                
+                // common
+                {
+                    common::Print(points);
+                    common::Print(0u);
+                    common::Print(0);
+                    common::Print(0.f);
+                    common::Print(1u);
+                    common::Print(1.f);
+                    common::Print(-1);
+                    common::Print(-1.f);
+                    common::Print(1.1);
+                    common::Print(-1.1);
+                    
+                    common::ConvertTo(1, 1); // int to int
+                    common::ConvertTo(1.f, 1); // float to int
+                    common::ConvertTo(double(1.0), 1); // double to int
+                    common::ConvertTo('1', 1); // char to int
+                    // common::ConvertTo(std::string("str"), 1); // Нельзя сконвертировать int в std::string
+                    
+                    common::Is_Base_Point(derivedPoint); // std::is_base_of(Point, DerivedPoint) == true
+                    // common::Is_Base_Point(noderivedPoint); // std::is_base_of(Point, DerivedPoint) == false
+                    
+                    int number1 = 1;
+                    double number2 = 1.0;
+                    std::string str = "str";
+                    
+                    auto pointer1 = common::variadic::constructArgs<NoDerivedPoint>(); // nullptr почему-то для конструктора default
+                    auto pointer2 = common::variadic::constructArgs<NoDerivedPoint>(number1, number2, str);
+                    auto pointer3 = common::variadic::constructArgs<NoDerivedPoint>(1, 1.0, "str");
+                    auto pointer4 = common::variadic::constructArgs<NoDerivedPoint>(1); // nullptr
+                    auto pointer5 = common::variadic::constructArgs<NoDerivedPoint>(1.0); // nullptr
+                    auto pointer6 = common::variadic::constructArgs<NoDerivedPoint>("str"); // nullptr
+                    
+                    common::variadic::Print_Numeric((int)1, (double)2.0, (float)3.0);
+                    // auto abs3 = common::abs((float)1.0); // Ошибка: не указан тип float
+                    
+                    auto allArithmetic1 = common::variadic::Has_All_Arithmetic(5, true, 5.5, false); // false
+                    auto allArithmetic2 = common::variadic::Has_All_Arithmetic(5, 5.5); // true
+                    auto anyArithmetic1 = common::variadic::Has_Any_Arithmetic(5, true, 5.5, false); // true
+                    auto anyArithmetic2 = common::variadic::Has_Any_Arithmetic(true, false); // true
+                    auto noneArithmetic1 = common::variadic::Has_None_Arithmetic(5, true, 5.5, false); // false
+                    auto noneArithmetic2 = common::variadic::Has_None_Arithmetic(5, 5.5); // false
+                    auto noneArithmetic3 = common::variadic::Has_None_Arithmetic(true, false); // false
+                }
+                // custom
+                {
+                    auto operation1 = custom::concepts::Operation<int>;  // true
+                    auto operation2 = custom::concepts::Operation<char>; // true
+                    auto operation3 = custom::concepts::Operation<std::string>; // false
+                    auto operation4 = custom::concepts::Operation<Point>; // false
+                    
+                    custom::Sort(points.begin(), points.end());
+                    custom::Print(points);
+                    custom::Print(1.1);
+                }
+                /*
+                 Сокращенный шаблон (auto или Concept auto) - шаблонная функция, которая содержит auto в качестве типа аргумента или возвращающегося значения
+                 Плюсы:
+                 - упрощает синтаксис
+                 - не нужно писать template
+                 Минусы
+                 - если забыть сделать return в функции, то функция станет void
+                 - можно вернуть не тот тип
+                 Решение: использовать концепты для точного возвращения нужного типа
+                 */
+                {
+                    // auto resultReturn = CONCEPT::AUTO::NothingReturn(); // Ошибка NothingReturn ничего не возвращает
+                    CONCEPT::AUTO::DrawShape(point);
+                    auto shape1 = CONCEPT::AUTO::GetShape1();
+                    auto shape2 = CONCEPT::AUTO::GetShape2();
+                    
+                    auto abs1 = CONCEPT::AUTO::ABS((int)1);
+                    auto abs2 = CONCEPT::AUTO::ABS((double)1.0);
+                    
+                    auto size1 = CONCEPT::AUTO::GetSize(points);
+                    auto size2 = CONCEPT::AUTO::GetSize(1.0);
+                    
+                    CONCEPT::AUTO::Print(1.1);
+                }
+                // metafunction
+                {
+                    std::array<Point, 1> pointsArray = {points.front()};
+                    std::list<Point> pointsList(points.begin(), points.end());
+                    
+                    std::cout<< CONCEPT::metafunction::Info<decltype(points)>::type << std::endl;
+                    std::cout<< CONCEPT::metafunction::Info<decltype(pointsArray)>::type << std::endl;
+                    std::cout<< CONCEPT::metafunction::Info<decltype(pointsList)>::type << std::endl;
+                    std::cout<< CONCEPT::metafunction::Info<decltype(point)>::type << std::endl;
+                }
             }
         }
     }
@@ -309,8 +539,22 @@ int main()
     */
     {
         CRTP::Derived derived;
-        derived.interface1();
-        derived.interface2();
+        derived.Interface1();
+        derived.Interface2();
+    }
+    /*
+     matching - паттерн сопоставляющий типы, который можно рассматривать как обобщение оператора switch-case
+     */
+    {
+        using namespace matching;
+        
+        Match([](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
+              [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
+              [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+              [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+              [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
+              )(1, 1, 1);
+        return 0;
     }
     
     return 0;

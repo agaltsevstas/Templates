@@ -11,8 +11,8 @@ class Class{};
 template<class T>
 using class_t = T;
 
-//template<class T>
-//typedef T T_t; // Ошибка: typedef caanot be a template
+// template<class T>
+// typedef T T_t; // Ошибка: typedef caanot be a template
 
 typedef Class Class_;
 using class_ = Class;

@@ -9,13 +9,13 @@ namespace instantiation
     {
     public:
         template<typename ...TArgs>
-        inline constexpr int implicitCountArgs(TArgs ...args)
+        inline constexpr int ImplicitCountArgs(TArgs&& ...args)
         {
             return sizeof...(args);
         }
         
         template<typename ...TArgs>
-        constexpr int explicitCountArgs(TArgs ...args);
+        constexpr int ExplicitCountArgs(TArgs ...args);
     };
 }
 #endif /* INSTANTIATION_hpp */

@@ -18,6 +18,26 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Auto.h" />
+    <ClInclude Include="Callback.h" />
+    <ClInclude Include="Concept.h" />
+    <ClInclude Include="CRTP.h" />
+    <ClInclude Include="FoldExpression.h" />
+    <ClInclude Include="Function.h" />
+    <ClInclude Include="Instantiation.h" />
+    <ClInclude Include="Matching.h" />
+    <ClInclude Include="Metafunction.h" />
+    <ClInclude Include="Non-type.h" />
+    <ClInclude Include="SFINAE.h" />
+    <ClInclude Include="Specialization.h" />
+    <ClInclude Include="typedef_using.h" />
+    <ClInclude Include="VariadicTemplate.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Instantiation.cpp" />
+    <ClCompile Include="Templates.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -117,6 +137,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,14 +160,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Templates.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Arguments.h" />
-    <ClInclude Include="Callback.h" />
-    <ClInclude Include="Function.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -3,26 +3,12 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "void variadic_template::print&lt;&gt;():VariadicTemplate.h">
-      </ContextState>
-      <ContextState
-         contextName = "int Instantiation::implicitCountArgs&lt;std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt; &gt;(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;):Instantiation.h">
-         <PersistentStrings>
-            <PersistentString
-               value = "args">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
          contextName = "void variadic_template::checkTypes&lt;int, char const*, float&gt;(int, char const*, float):VariadicTemplate.h">
          <PersistentStrings>
             <PersistentString
                value = "args">
             </PersistentString>
          </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "void variadic_template::print&lt;char const*, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;, int, double&gt;(char const*, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;, int, double):VariadicTemplate.h">
       </ContextState>
       <ContextState
          contextName = "void variadic_template::checkTypes&lt;int, char [6], float&gt;(int const&amp;, char const (&amp;) [6], float const&amp;):VariadicTemplate.h">
@@ -34,6 +20,28 @@
       </ContextState>
       <ContextState
          contextName = "void variadic_template::print&lt;std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;, int, double&gt;(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;, int, double):VariadicTemplate.h">
+      </ContextState>
+      <ContextState
+         contextName = "bool variadic_template::CheckProperty2&lt;&gt;(variadic_template::MeasureProperty):VariadicTemplate.h">
+         <PersistentStrings>
+            <PersistentString
+               value = "types">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "void variadic_template::print&lt;char const*, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;, int, double&gt;(char const*, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;, int, double):VariadicTemplate.h">
+      </ContextState>
+      <ContextState
+         contextName = "void variadic_template::print&lt;&gt;():VariadicTemplate.h">
+      </ContextState>
+      <ContextState
+         contextName = "int Instantiation::implicitCountArgs&lt;std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt; &gt;(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;):Instantiation.h">
+         <PersistentStrings>
+            <PersistentString
+               value = "args">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
    </ContextStates>
 </VariablesViewState>
