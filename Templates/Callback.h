@@ -9,6 +9,7 @@ namespace callback
     {
     public:
         virtual void operator()() = 0;
+        virtual ~ICallback() = default;
     };
 
     template<class TClass, class TCallBack, typename TArgs>
@@ -22,7 +23,10 @@ namespace callback
         {
             
         }
-        virtual void operator()() override { (_class.*(_callback))(std::forward<TArgs>(_args)); }
+        virtual void operator()() override
+        {
+            (_class.*(_callback))(std::forward<TArgs>(_args));
+        }
     protected:
         TClass _class;
         TCallBack _callback;

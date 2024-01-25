@@ -2,6 +2,7 @@
 
 #include "Auto.h"
 #include "Callback.h"
+#include "Forward.h"
 #include "Instantiation.h"
 #include "Concept.h"
 #include "CRTP.h"
@@ -223,6 +224,75 @@ int main()
         // auto multi2 = Multiplication<v2.value, v2>(100.0); // Ошибка в XCode
     }
     /*
+     std::forward - идеальной передача (perfect forwarding).
+     Свойства:
+     - std::forward РАБОТАЕТ с T&& с НЕконстантными ссылками
+     - std::forward НЕ работает с const T& - для всех типов ссылок (rvalue, const rvalue, lvalue, const lvalue), т.к. rvalue(T&&) -> lvalue (T&) на основе сжатии ссылок (T&(A&&) = A& // && отбрасывается).
+     - std::forward НЕ будет работает c const&& для lvalue
+
+     std::forward используется ТОЛЬКО в шаблонах:
+     template<typename T> T&& forward(T&& param)
+     {
+         if (is_lvalue_reference<T>::value)
+             return param;
+         else
+             return move(param);
+     }
+     Тип typename T имеет 2 перегрузки:
+     1. lvalue-ссылка (T = const A& или T = A&)
+     2. rvalue-ссылка (T = A&&)
+     3. Бессылочный тип (T = A*) - указатель
+
+     Идеальная передача позволяет создавать функции-обертки, где lvalue-выражения копируются (просто возвращается lvalue), а rvalue-выражения перемещаются (std::move).
+     Использование:
+     class Example
+     {
+        std::string field;
+        template <class T>
+        Example(T&& x) : field(std::forward<T>(x)) {}
+     };
+     
+     reference collapse — сжатие ссылок, которое используется только в шаблонах и определяет поведение (отбрасывает не нужные &) при появлении ссылки на ссылку. Меньшее число (&) - выигрывает у большего числа (&&).
+     Пример:
+     T инстанцирован A&&, то T&& (A&& &&) = A&& // && отбрасывается
+     Правила:
+     T&(A&)  = A& // & отбрасывается
+     T&&(A&) = A& // && отбрасывается
+     T&(A&&) = A& // && отбрасывается
+     T&&(A&&) = A&& // && отбрасывается, но тип xvalue->lvalue
+     Универсальной ссылка - аргумент типа T&&, где T — шаблонный тип, может принимать оба типа ссылок (A& и A&&).
+     Пример:
+     template<typename T> function(T&& arg) // arg - lvalue всегда, т.к. T&& arg - xvalue, поэтому будет вызываться конструктор копирования
+     Отличие std::forward от std::move: std::move - приводит lvalue к rvalue, std::forward - lvalue просто возвращает lvalue, а rvalue – возвращает std::move(rvalue).
+     */
+    {
+        using namespace FORWARD;
+        
+        std::cout << "FORWARD" << std::endl;
+        int number = 1;
+        Function(number); // lvalue: T - int&, arg - int&, std::cout << "&" << "&&" << "&" << std::endl;
+        Function(0); // rvalue: T - int, arg - int&&, std::cout << "&" << "&&" << "&&" << std::endl;
+        std::cout << "--------------------" << std::endl;
+        
+        A a;
+        std::cout << "--------------------" << std::endl;
+        // Без std::forward
+        {
+            std::cout << "WITHOUT FORWARD" << std::endl;
+            auto shared_ptr1 = Make_Shared<A>(a);   // Должно произойти копирование
+            auto shared_ptr2 = Make_Shared<A>(A()); // Должно произойти копирование
+            std::cout << "--------------------" << std::endl;
+        }
+        
+        // std::forward
+        {
+            std::cout << "FORWARD" << std::endl;
+            auto shared_ptr1 = Make_Shared_Forward<A>(a);   // Должно произойти перемещение
+            auto shared_ptr2 = Make_Shared_Forward<A>(A()); // Должно произойти перемещение
+            std::cout << "--------------------" << std::endl;
+        }
+    }
+    /*
      Variadic Template - шаблон с заранее неизвестным числом аргументов
      Оператор многоточия или элипсис  (…), когда он стоит слева от имени параметра функции, он объявляет набор параметров (template<typename... Args>), когда стоит справа от шаблона или аргумента вызова функции, он распаковывает параметры в отдельные аргументы (Args&... args).
      Например, std::tuple - может принять любое число входных параметров
@@ -332,13 +402,22 @@ int main()
     }
     // metafunction
     {
-        using namespace metafunction;
+        auto is_same_1 = metafunction::is_same<int, int32_t>::value;
+        auto is_same_2 = metafunction::is_same<int, std::string>::value;
+        auto squareRes = metafunction::Square<5>::value;
+        auto factorial = metafunction::Factorial<5>::value;
+        auto fibonacci = metafunction::Fibonacci<7>::value;
         
-        auto is_same_1 = is_same<int, int32_t>::value;
-        auto is_same_2 = is_same<int, std::string>::value;
-        auto squareRes = Square<5>::value;
-        auto factorial = Factorial<5>::value;
-        auto fibonacci = Fibonacci<7>::value;
+        CONCEPT::Point point;
+        std::vector<CONCEPT::Point> points = { { 2, 1 }, { 2, 2 }, { 1, 1 }, { 1, 2 } };
+        
+        std::array<CONCEPT::Point, 1> pointsArray = {points.front()};
+        std::list<CONCEPT::Point> pointsList(points.begin(), points.end());
+        
+        std::cout<< CONCEPT::metafunction::Info<decltype(points)>::type << std::endl;
+        std::cout<< CONCEPT::metafunction::Info<decltype(pointsArray)>::type << std::endl;
+        std::cout<< CONCEPT::metafunction::Info<decltype(pointsList)>::type << std::endl;
+        std::cout<< CONCEPT::metafunction::Info<decltype(point)>::type << std::endl;
     }
     /*
      SFINAE (substitution failure is not an error) - при определении перегрузок функции ошибочные подстановки в шаблоны не вызывают ошибку компиляции, а отбрасываются из списка кандидатов на наиболее подходящую перегрузку.
@@ -482,10 +561,10 @@ int main()
                 }
                 // custom
                 {
-                    auto operation1 = custom::concepts::Operation<int>;  // true
-                    auto operation2 = custom::concepts::Operation<char>; // true
-                    auto operation3 = custom::concepts::Operation<std::string>; // false
-                    auto operation4 = custom::concepts::Operation<Point>; // false
+                    auto operation1 = custom::details::Operation<int>;  // true
+                    auto operation2 = custom::details::Operation<char>; // true
+                    auto operation3 = custom::details::Operation<std::string>; // false
+                    auto operation4 = custom::details::Operation<Point>; // false
                     
                     custom::Sort(points.begin(), points.end());
                     custom::Print(points);

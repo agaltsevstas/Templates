@@ -25,7 +25,6 @@ namespace CONCEPT
 
         auto operator<=>(const Point&) const = default; // Условие: без этого concept не будет работать
 
-
         auto Сoefficient(auto сoefficient)
         {
             return (x + y) * сoefficient;
@@ -59,7 +58,7 @@ namespace CONCEPT
 
     namespace common
     {
-        namespace concepts
+        namespace details
         {
             template <class T>
             concept Integral = std::is_integral<T>::value; // Условие: является ли тип целочисленным
@@ -96,21 +95,21 @@ namespace CONCEPT
         }
 
         /// 1 Способ: без использования requires, использовать для custom условий
-        template<concepts::SignedIntegral T>
+        template<details::SignedIntegral T>
         void Print(const T& value)
         {
             std::cout << "Целочисленное Signed число: " << value << std::endl;
         }
 
         /// 2 Способ: использование сокращенного шаблона auto. До C++20 они были доступны только в лямбдах. Теперь можно использовать auto
-        void Print(const concepts::UnsignedIntegral auto& value)
+        void Print(const details::UnsignedIntegral auto& value)
         {
             std::cout << "Целочисленное Unsigned число: " << value << std::endl;
         }
 
         /// 3 Способ: НЕобязательное использование requires ПЕРЕД функцией
         template<class T>
-        requires concepts::SignedFloat<T>
+        requires details::SignedFloat<T>
         void Print(const T& value)
         {
             std::cout << "Дробное Signed число: " << value << std::endl;
@@ -118,14 +117,14 @@ namespace CONCEPT
 
         /// 4 Способ: НЕобязательное использование requires ПОСЛЕ функции
         template<class T>
-        void Print(const T& value) requires concepts::UnsignedFloat<T>
+        void Print(const T& value) requires details::UnsignedFloat<T>
         {
             std::cout << "Дробное Unsigned число: " << value << std::endl;
         }
 
         /// 5 Способ: ОБЯЗАТЕЛЬНОЕ использование requires ПЕРЕД функцией
         template<class T, class U>
-        requires concepts::Convertible_To<T, U>
+        requires details::Convertible_To<T, U>
         constexpr void ConvertTo(const T& lhs, const U& rhs)
         {
             std::cout << "Можно сконвертировать тип : " << typeid(T).name() << " в тип: " << typeid(U).name() << std::endl;
@@ -162,7 +161,7 @@ namespace CONCEPT
          /*
           Концепт может иметь несколько шаблонных параметров. При использовании концепта нужно задать все, кроме одного — того, которое проверяется на ограничение.
           */
-        template<concepts::Derived<Point> Class>
+        template<details::Derived<Point> Class>
         void Is_Base_Point(const Class& object)
         {
 
@@ -171,7 +170,7 @@ namespace CONCEPT
         namespace variadic
         {
             template <class T, typename... TArgs>
-                requires std::is_constructible_v<T, TArgs...> // Условие: проверка списка аргументов для создания типа T
+            requires std::is_constructible_v<T, TArgs...> // Условие: проверка списка аргументов для создания типа T
             std::unique_ptr<T> constructArgs(TArgs&&... args)
             {
                 return std::make_unique<T>(std::forward<TArgs>(args)...);
@@ -185,26 +184,26 @@ namespace CONCEPT
             }
 
             template<typename... Args>
-            void Print_Numeric(Args&&... args) requires concepts::Numerics<Args...>
+            void Print_Numeric(Args&&... args) requires details::Numerics<Args...>
             {
                 std::cout << "Числа: ";
                 ((std::cout << args << " "), ...);
                 std::cout << std::endl;
             }
 
-            template<concepts::Arithmetic... TArgs>
+            template<details::Arithmetic... TArgs>
             bool Has_All_Arithmetic(TArgs&&... args)
             {
                 return (... && args);
             }
 
-            template<concepts::Arithmetic... TArgs>
+            template<details::Arithmetic... TArgs>
             bool Has_Any_Arithmetic(TArgs&&... args)
             {
                 return (... || args);
             }
 
-            template<concepts::Arithmetic... TArgs>
+            template<details::Arithmetic... TArgs>
             bool Has_None_Arithmetic(TArgs&&... args)
             {
                 return !(... || args);
@@ -214,7 +213,7 @@ namespace CONCEPT
 
     namespace custom
     {
-        namespace concepts
+        namespace details
         {
             template<class T>
             concept Iterator = requires(const T & lhs, const T & rhs) // Условие: проверка на возможность сравнения
@@ -236,13 +235,13 @@ namespace CONCEPT
             };
         }
 
-        template<concepts::Iterator It>
+        template<details::Iterator It>
         void Sort(const It& begin, const It& end)
         {
             std::sort(begin, end);
         }
 
-        template<concepts::HasBeginEnd T>
+        template<details::HasBeginEnd T>
         void Print(const T& container)
         {
             if constexpr (requires {std::is_convertible_v<decltype(container.front()), Point>; }) // requires можно использовать прямо в теле функции или метода
@@ -279,24 +278,27 @@ namespace CONCEPT
     */
     namespace AUTO
     {
-        namespace concepts
+        namespace details
         {
 
             template<class T>
-            concept HasBeginEnd = requires(const T & container) // Условие: проверка на контейнер
+            concept HasBeginEnd = requires(const T& container) // Условие: проверка на контейнер
             {
                 container.begin();
                 container.end();
             };
 
             template<typename T>
-            concept Shape = requires(const T & point)
+            concept Shape = requires(const T& point)
             {
                 { point.Draw() } -> std::same_as<void>;
             };
 
             template<typename T>
-            concept hasSize = requires (const T & container) { container.size(); }; // Условие: имеет ли тип метод size()
+            concept hasSize = requires (const T& container)
+            {
+                container.size();
+            }; // Условие: имеет ли тип метод size()
 
             template <typename T, typename... TArgs>
             concept OneOfTypes = (std::is_same_v<T, TArgs> || ...);
@@ -308,13 +310,13 @@ namespace CONCEPT
             //return 0; // Если забыли написать return, то компилятор не выдаст ошибку
         }
 
-        void DrawShape(const concepts::Shape auto& shape)
+        void DrawShape(const details::Shape auto& shape)
         {
             shape.Draw();
         }
     
         // C++20, 1 Способ: точно возвращается значение и нужный тип
-        concepts::Shape auto GetShape1()
+        details::Shape auto GetShape1()
         {
             Point point;
             DerivedPoint derivedPoint;
@@ -326,7 +328,7 @@ namespace CONCEPT
         }
 
         // C++20, 2 Способ: точно возвращается значение и нужный тип
-        auto GetShape2() -> concepts::Shape auto
+        auto GetShape2() -> details::Shape auto
         {
             Point point;
             DerivedPoint derivedPoint;
@@ -337,14 +339,14 @@ namespace CONCEPT
             //return noDerivedPoint; // ERROR
         }
 
-            auto ABS(const concepts::OneOfTypes<int, double> auto& value)
+        auto ABS(const details::OneOfTypes<int, double> auto& value)
         {
             return value < 0 ? -value : value;
         }
 
         auto GetSize(const auto& x)
         {
-            if constexpr (concepts::hasSize<decltype(x)>)
+            if constexpr (details::hasSize<decltype(x)>)
                 return x.size();
             else
                 return x;
@@ -358,22 +360,22 @@ namespace CONCEPT
 
     namespace metafunction
     {
-        namespace concepts
+        namespace details
         {
             template<class T>
             concept isContainer = std::ranges::common_range<T>; // Условие: является ли тип контейнером
 
             template<typename T>
-            concept hasData = requires (T & container)
+            concept hasData = requires (const T& container) // Условие: имеет ли тип метод data
             {
                 container.data();
-            }; // Условие: имеет ли тип метод data
+            };
 
             template<typename T>
-            concept hasReserve = requires (T & container) // c const почему-то не работает
+            concept hasReserve = requires (const T& container) // Условие: является ли тип контейнером и имеет метод reserve
             {
                 container.reserve(1);
-            }; // Условие: является ли тип контейнером и имеет метод reserve
+            };
 
             template<typename T>
             concept isVector = isContainer<T> && hasData<T> && hasReserve<T>; // Условие: является ли тип std::vector
@@ -388,19 +390,19 @@ namespace CONCEPT
             static constexpr std::string_view type = "Unknown";
         };
 
-        template<concepts::isContainer T>
+        template<details::isContainer T>
         struct Info<T>
         {
             static constexpr std::string_view type = "Container";
         };
 
-        template<concepts::isVector T>
+        template<details::isVector T>
         struct Info<T>
         {
             static constexpr std::string_view type = "Vector";
         };
 
-        template<concepts::isArray T>
+        template<details::isArray T>
         struct Info<T>
         {
             static constexpr std::string_view type = "Array";

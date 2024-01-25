@@ -24,6 +24,7 @@
     <ClInclude Include="Concept.h" />
     <ClInclude Include="CRTP.h" />
     <ClInclude Include="FoldExpression.h" />
+    <ClInclude Include="Forward.h" />
     <ClInclude Include="Function.h" />
     <ClInclude Include="Instantiation.h" />
     <ClInclude Include="Matching.h" />
