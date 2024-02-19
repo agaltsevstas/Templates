@@ -41,6 +41,45 @@ namespace CRTP
             std::cout << "interface2 Derived" << std::endl;
         }
     };
+
+    namespace SINGLETON
+    {
+        /*
+         Миксины (Mixin): NonCopyable, NonMoveable
+         */
+        struct NonCopyable
+        {
+            NonCopyable() = default;
+            NonCopyable(const NonCopyable&) = delete;
+            NonCopyable& operator = (const NonCopyable&) = delete;
+        };
+
+        struct NonMoveable
+        {
+            NonMoveable() = default;
+            NonMoveable(NonMoveable&&) = delete;
+            NonMoveable& operator = (NonCopyable&&) = delete;
+        };
+
+        /*
+         Синглтон Майерса + CRTP
+         */
+        template<class Derived>
+        struct Singleton : private NonCopyable, private NonMoveable // Делаем приватные конструкторы базовых классов
+        {
+            static Derived &Instance() noexcept
+            {
+                static Derived instance;
+                return instance;
+            }
+            
+        protected:
+            Singleton() = default;
+        };
+
+        struct Singleton1 : public Singleton<Singleton1>{};
+        struct Singleton2 : public Singleton<Singleton2>{};
+    }
 }
 
 #endif /* CRTP_h */

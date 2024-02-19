@@ -490,6 +490,10 @@ int main()
         CRTP::Derived derived;
         derived.Interface1();
         derived.Interface2();
+        
+        auto& singleton1 = CRTP::SINGLETON::Singleton1::Instance();
+        auto& singleton2 = CRTP::SINGLETON::Singleton2::Instance();
+
     }
     /*
      SFINAE (substitution failure is not an error) - при определении перегрузок функции ошибочные подстановки в шаблоны не вызывают ошибку компиляции, а отбрасываются из списка кандидатов на наиболее подходящую перегрузку.
