@@ -30,14 +30,16 @@ namespace variadic_template
     }
     
     /// Stub-функция (заглушка) для рекурсии
-    template<typename... Args>
-    void stub(Args&&...) {}
+    void print()
+    {
+        std::cout << "end print" ;
+    }
 
     template<typename T, typename... TArgs>
     inline void print(const T& first, TArgs&&... args)
     {
         std::cout << first << std::endl;
-        stub(args...);
+        print(std::forward<TArgs>(args)...);
     }
 }
 

@@ -46,6 +46,12 @@ namespace non_type
         return (args + ...);
     }
 
+    template <int ...nums>
+    void printNumbers ()  {
+         // Раскрытие пакета для non-type template параметров в выражении свертки для печати чисел
+         ((std::cout << nums << ' ' ), ...) ;
+    }
+
     /// C++14: non-type template константа с неизвестным типом была передача двух параметров – типа и значения
     template <typename Type, Type value>
     constexpr Type TConstant1 = value;

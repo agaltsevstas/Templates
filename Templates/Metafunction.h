@@ -28,6 +28,9 @@ namespace metafunction
         static const int value = x * x;
     };
 
+    /*
+     Для факторила компилятор сгенерирует кол-во struct == числу, поэтому исполняемый файл (.exe) станет большим.
+     */
     template<unsigned int N>
     struct Factorial
     {

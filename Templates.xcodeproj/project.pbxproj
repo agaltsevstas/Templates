@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		80EC04672B62F52A0039AA2A /* Templates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80EC04582B62F52A0039AA2A /* Templates.cpp */; };
+		80EC04672B62F52A0039AA2A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80EC04582B62F52A0039AA2A /* main.cpp */; };
 		80EC04682B62F52A0039AA2A /* Instantiation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80EC04622B62F52A0039AA2A /* Instantiation.cpp */; };
 /* End PBXBuildFile section */
 
@@ -27,7 +27,7 @@
 		8076FC7D2B235B230067767B /* Templates */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Templates; sourceTree = BUILT_PRODUCTS_DIR; };
 		80EC04562B62F5290039AA2A /* Matching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matching.h; path = Templates/Matching.h; sourceTree = "<group>"; };
 		80EC04572B62F5290039AA2A /* SFINAE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SFINAE.h; path = Templates/SFINAE.h; sourceTree = "<group>"; };
-		80EC04582B62F52A0039AA2A /* Templates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Templates.cpp; path = Templates/Templates.cpp; sourceTree = "<group>"; };
+		80EC04582B62F52A0039AA2A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = Templates/main.cpp; sourceTree = "<group>"; };
 		80EC04592B62F52A0039AA2A /* Callback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Callback.h; path = Templates/Callback.h; sourceTree = "<group>"; };
 		80EC045A2B62F52A0039AA2A /* FoldExpression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FoldExpression.h; path = Templates/FoldExpression.h; sourceTree = "<group>"; };
 		80EC045B2B62F52A0039AA2A /* CRTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRTP.h; path = Templates/CRTP.h; sourceTree = "<group>"; };
@@ -72,7 +72,7 @@
 				80EC04632B62F52A0039AA2A /* Non-type.h */,
 				80EC04572B62F5290039AA2A /* SFINAE.h */,
 				80EC045E2B62F52A0039AA2A /* Specialization.h */,
-				80EC04582B62F52A0039AA2A /* Templates.cpp */,
+				80EC04582B62F52A0039AA2A /* main.cpp */,
 				80EC04602B62F52A0039AA2A /* typedef_using.h */,
 				80EC04642B62F52A0039AA2A /* VariadicTemplate.h */,
 				8076FC7E2B235B230067767B /* Products */,
@@ -114,7 +114,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1530;
 				TargetAttributes = {
 					8076FC7C2B235B230067767B = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -144,7 +144,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80EC04672B62F52A0039AA2A /* Templates.cpp in Sources */,
+				80EC04672B62F52A0039AA2A /* main.cpp in Sources */,
 				80EC04682B62F52A0039AA2A /* Instantiation.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -185,9 +185,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -243,9 +245,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -266,6 +270,8 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -275,6 +281,8 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

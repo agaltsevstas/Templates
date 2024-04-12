@@ -216,20 +216,20 @@ namespace CONCEPT
         namespace details
         {
             template<class T>
-            concept Iterator = requires(const T & lhs, const T & rhs) // Условие: проверка на возможность сравнения
+            concept Iterator = requires(const T& lhs, const T& rhs) // Условие: проверка на возможность сравнения
             {
                 {lhs < rhs} -> std::convertible_to<bool>;
             };
 
             template<class T>
-            concept HasBeginEnd = requires(const T & container) // Условие: проверка на контейнер
+            concept HasBeginEnd = requires(const T& container) // Условие: проверка на контейнер
             {
                 container.begin();
                 container.end();
             };
 
             template<typename T>
-            concept Operation = requires (const T & item)
+            concept Operation = requires (const T& item)
             {
                 item + item; item - item; item* item; // Условие: сложение, вычитание, умножение
             };
@@ -319,7 +319,7 @@ namespace CONCEPT
         details::Shape auto GetShape1()
         {
             Point point;
-            DerivedPoint derivedPoint;
+            [[maybe_unused]] DerivedPoint derivedPoint;
             NoDerivedPoint noDerivedPoint;
 
             return point;
@@ -331,8 +331,8 @@ namespace CONCEPT
         auto GetShape2() -> details::Shape auto
         {
             Point point;
-            DerivedPoint derivedPoint;
-            NoDerivedPoint noDerivedPoint;
+            [[maybe_unused]] DerivedPoint derivedPoint;
+            [[maybe_unused]] NoDerivedPoint noDerivedPoint;
 
             return point;
             //return derivedPoint; // OK

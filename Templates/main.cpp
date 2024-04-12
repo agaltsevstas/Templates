@@ -190,10 +190,10 @@ int main()
         using namespace instantiation;
         
         Instantiation instance;
-        auto implicitCountArguments1 = instance.ImplicitCountArgs(1);
-        auto implicitCountArguments2 = instance.ImplicitCountArgs(1.0);
-        auto implicitCountArguments3 = instance.ImplicitCountArgs("1.0");
-        auto implicitCountArguments4 = instance.ImplicitCountArgs(1, 1.0, "1.0");
+        [[maybe_unused]] auto implicitCountArguments1 = instance.ImplicitCountArgs(1);
+        [[maybe_unused]] auto implicitCountArguments2 = instance.ImplicitCountArgs(1.0);
+        [[maybe_unused]] auto implicitCountArguments3 = instance.ImplicitCountArgs("1.0");
+        [[maybe_unused]] auto implicitCountArguments4 = instance.ImplicitCountArgs(1, 1.0, "1.0");
         
         //auto explicitCountArguments1 = instance.explicitCountArgs(1);
         //auto explicitCountArguments2 = instance.explicitCountArgs(1.0);
@@ -228,10 +228,10 @@ int main()
      Решение: использовать концепты для точного возвращения нужного типа
     */
     {
-        auto sum1 = AUTO::GetSum(1, 2);
-        auto sum2 = AUTO::GetSum(1, 2.f);
-        auto sum3 = AUTO::Sum(1, 2);
-        auto sum4 = AUTO::Sum(1, 2.f);
+        [[maybe_unused]] auto sum1 = AUTO::GetSum(1, 2);
+        [[maybe_unused]] auto sum2 = AUTO::GetSum(1, 2.f);
+        [[maybe_unused]] auto sum3 = AUTO::Sum(1, 2);
+        [[maybe_unused]] auto sum4 = AUTO::Sum(1, 2.f);
 
         // Concept
         {
@@ -243,8 +243,8 @@ int main()
             
             // auto resultReturn = CONCEPT::AUTO::NothingReturn(); // Ошибка NothingReturn ничего не возвращает
             CONCEPT::AUTO::DrawShape(point);
-            auto shape1 = CONCEPT::AUTO::GetShape1(); // C++20, 1 Способ: точно возвращается значение и нужный тип
-            auto shape2 = CONCEPT::AUTO::GetShape2(); // C++20, 2 Способ: точно возвращается значение и нужный тип
+            [[maybe_unused]] auto shape1 = CONCEPT::AUTO::GetShape1(); // C++20, 1 Способ: точно возвращается значение и нужный тип
+            [[maybe_unused]] auto shape2 = CONCEPT::AUTO::GetShape2(); // C++20, 2 Способ: точно возвращается значение и нужный тип
         }
     }
     /*
@@ -256,10 +256,10 @@ int main()
     {
         using namespace non_type;
         
-        array1<int, 10> a1;
-        array2<int, 10> a2;
+        [[maybe_unused]] array1<int, 10> a1;
+        [[maybe_unused]] array2<int, 10> a2;
         
-        Test<10> test1;
+        [[maybe_unused]] Test<10> test1;
         // Test<10.5> test2; // Ошибка в XCode
         
         TConstant1<int, 10>;
@@ -268,11 +268,11 @@ int main()
         Print<int, 10>(); // C++14: способ передать non-type template параметр с неизвестным типом была передача двух параметров – типа и значения
         
         // С++20: вещественные числа
-        auto sum_result2 = Sum<1, 2, 3>(); // C++17: можно писать auto для non-type template параметров, вещественные числа передать нельзя
+        [[maybe_unused]] auto sum_result2 = Sum<1, 2, 3>(); // C++17: можно писать auto для non-type template параметров, вещественные числа передать нельзя
         
-        constexpr Value<int> v1(2); // Без constexpr будет ошибка
-        constexpr Value<double> v2(2.5); // Без constexpr будет ошибка
-        auto multi1 = Multiplication<v1.value, v1>(100);
+        [[maybe_unused]] constexpr Value<int> v1(2); // Без constexpr будет ошибка
+        [[maybe_unused]] constexpr Value<double> v2(2.5); // Без constexpr будет ошибка
+        [[maybe_unused]] auto multi1 = Multiplication<v1.value, v1>(100);
         // auto multi2 = Multiplication<v2.value, v2>(100.0); // Ошибка в XCode
     }
     /*
@@ -369,13 +369,13 @@ int main()
         using namespace fold_expression;
         std::vector<int> numbers;
         
-        auto sum_result1 = Sum(1, 2, 3);
-        auto average_result = Average(1, 2, 3);
-        auto norm_result = Norm(1, 2, 3);
-        auto pow_sum_result = Pow_Sum(1, 2, 3);
+        [[maybe_unused]] auto sum_result1 = Sum(1, 2, 3);
+        [[maybe_unused]] auto average_result = Average(1, 2, 3);
+        [[maybe_unused]] auto norm_result = Norm(1, 2, 3);
+        [[maybe_unused]] auto pow_sum_result = Pow_Sum(1, 2, 3);
         Push_To_Vector(numbers, 1, 2, 3, 4, 5);
-        auto countArguments = CountArgs(1, "hello", 2.f);
-        auto countArgumentsFunction = CountArgsFunction(Func).value;
+        [[maybe_unused]] auto countArguments = CountArgs(1, "hello", 2.f);
+        [[maybe_unused]] auto countArgumentsFunction = CountArgsFunction(Func).value;
         CheckTypes(int(1), std::string("hello"), double(2.0));
         Print_Strings("one", std::string{"two"});
     }
@@ -411,7 +411,7 @@ int main()
             return (... + args);
         };
         
-        auto sum = Sum(10, 11, 12);
+        [[maybe_unused]] auto sum = Sum(10, 11, 12);
         
         // Сокращенный шаблон (auto)
         auto Average = [&Sum](auto&&... args)
@@ -420,7 +420,7 @@ int main()
             return s / sizeof...(args);
         };
         
-        auto average = Average(10, 11, 12);
+        [[maybe_unused]] auto average = Average(10, 11, 12);
     }
     // callback
     {
@@ -460,11 +460,11 @@ int main()
     }
     // metafunction
     {
-        auto is_same_1 = metafunction::is_same<int, int32_t>::value;
-        auto is_same_2 = metafunction::is_same<int, std::string>::value;
-        auto squareRes = metafunction::Square<5>::value;
-        auto factorial = metafunction::Factorial<5>::value;
-        auto fibonacci = metafunction::Fibonacci<7>::value;
+        [[maybe_unused]] auto is_same_1 = metafunction::is_same<int, int32_t>::value;
+        [[maybe_unused]] auto is_same_2 = metafunction::is_same<int, std::string>::value;
+        [[maybe_unused]] auto squareRes = metafunction::Square<5>::value;
+        [[maybe_unused]] auto factorial = metafunction::Factorial<5>::value;
+        [[maybe_unused]] auto fibonacci = metafunction::Fibonacci<7>::value;
         
         CONCEPT::Point point;
         std::vector<CONCEPT::Point> points = { { 2, 1 }, { 2, 2 }, { 1, 1 }, { 1, 2 } };
@@ -472,10 +472,10 @@ int main()
         std::array<CONCEPT::Point, 1> pointsArray = {points.front()};
         std::list<CONCEPT::Point> pointsList(points.begin(), points.end());
         
-        std::cout<< CONCEPT::metafunction::Info<decltype(points)>::type << std::endl;
-        std::cout<< CONCEPT::metafunction::Info<decltype(pointsArray)>::type << std::endl;
-        std::cout<< CONCEPT::metafunction::Info<decltype(pointsList)>::type << std::endl;
-        std::cout<< CONCEPT::metafunction::Info<decltype(point)>::type << std::endl;
+        std::cout << CONCEPT::metafunction::Info<decltype(points)>::type << std::endl;
+        std::cout << CONCEPT::metafunction::Info<decltype(pointsArray)>::type << std::endl;
+        std::cout << CONCEPT::metafunction::Info<decltype(pointsList)>::type << std::endl;
+        std::cout << CONCEPT::metafunction::Info<decltype(point)>::type << std::endl;
     }
     /*
      CRTP (curiously recurring template pattern) - рекурсивный шаблон: класс Derived наследуется от шаблонного класса Base, использующего Derived как шаблонный параметр T. Через метод базового класса Base можно вызвать метод наследуемого класса Derived, используя статический полиморфизм вместо динамического полиморфизма (без таблицы виртуальных функций): static_cast<T*>(this)->method()
@@ -491,8 +491,8 @@ int main()
         derived.Interface1();
         derived.Interface2();
         
-        auto& singleton1 = CRTP::SINGLETON::Singleton1::Instance();
-        auto& singleton2 = CRTP::SINGLETON::Singleton2::Instance();
+        [[maybe_unused]] auto& singleton1 = CRTP::SINGLETON::Singleton1::Instance();
+        [[maybe_unused]] auto& singleton2 = CRTP::SINGLETON::Singleton2::Instance();
 
     }
     /*
@@ -505,18 +505,21 @@ int main()
      - SFINAE рассматривает только заголовок функции, ошибки в теле функции не будут пропущены
     */
     {
-        int integer_num = 5;
-        float floating_num = 5.0;
-        bool boolean = true;
-        Number<int> number_int(5);
-
-        using namespace SFINAE;
         // Square
         {
+            using namespace SFINAE;
+            
+            int integer_num = 5;
+            float floating_num = 5.0;
+            bool boolean = true;
+            Number<int> number_int(5);
+            Number<float> number_float(5.0f);
+            Number<float> number_boolean(true);
+            
             {
-                auto square1 = Square(integer_num); // Вызов int Square(int);
-                auto square2 = Square(floating_num); // Вызов float Square(float);
-                auto square3 = Square(boolean);  // Вызов bool Square(bool);
+                [[maybe_unused]] auto square1 = Square(integer_num); // Вызов int Square(int);
+                [[maybe_unused]] auto square2 = Square(floating_num); // Вызов float Square(float);
+                [[maybe_unused]] auto square3 = Square(boolean);  // Вызов bool Square(bool);
                 //auto square4 = SFINAE::Square(number_int); // Ошибка: не найден operator*
             }
 
@@ -528,53 +531,65 @@ int main()
                 //auto square4 = IS_ARITHMETIC::Square(number_int); // Ошибка: бинарный "*": "const T" не определяет этот оператор или преобразование к типу приемлемо к встроенному оператору
             }
 
-            // std::enable_if
+            // C++14: std::enable_if
             {
-                using namespace SFINAE;
-                
-                auto square1 = ENABLE_IF::Square(integer_num); // Вызов int Square(int);
-                auto square2 = ENABLE_IF::Square(floating_num); // Вызов float Square(float);
-                auto square3 = ENABLE_IF::Square(boolean);  // Вызов bool Square(bool);
-                auto square4 = ENABLE_IF::Square(number_int); // Вызов Number<int> Square(Number<int>);
+                [[maybe_unused]] auto square1 = ENABLE_IF::Square(integer_num); // Вызов int Square(int);
+                [[maybe_unused]] auto square2 = ENABLE_IF::Square(floating_num); // Вызов float Square(float);
+                [[maybe_unused]] auto square3 = ENABLE_IF::Square(boolean);  // Вызов bool Square(bool);
+                [[maybe_unused]] auto square4 = ENABLE_IF::Square(number_int); // Вызов Number<int> Square(Number<int>);
+                [[maybe_unused]] auto square5 = ENABLE_IF::Square(number_float); // Вызов Number<float> Square(Number<float>);
+                [[maybe_unused]] auto square6 = ENABLE_IF::Square(number_boolean); // Вызов Number<bool> Square(Number<bool>);
             }
 
-            // constexpr
+            // C++17: constexpr
             {
-                auto square1 = CONSTEXPR::Square(integer_num); // Вызов int Square(int);
-                auto square2 = CONSTEXPR::Square(floating_num); // Вызов float Square(float);
-                auto square3 = CONSTEXPR::Square(boolean);  // Вызов bool Square(bool);
-                auto square4 = CONSTEXPR::Square(number_int); // Вызов Number<int> Square(Number<int>);
+                [[maybe_unused]] auto square1 = CONSTEXPR::Square(integer_num); // Вызов int Square(int);
+                [[maybe_unused]] auto square2 = CONSTEXPR::Square(floating_num); // Вызов float Square(float);
+                [[maybe_unused]] auto square3 = CONSTEXPR::Square(boolean);  // Вызов bool Square(bool);
+                [[maybe_unused]] auto square4 = CONSTEXPR::Square(number_int); // Вызов Number<int> Square(Number<int>);
+                [[maybe_unused]] auto square5 = CONSTEXPR::Square(number_float); // Вызов Number<float> Square(Number<float>);
+                [[maybe_unused]] auto square6 = CONSTEXPR::Square(number_boolean); // Вызов Number<bool> Square(Number<bool>);
                 
                 // TODO:
                 CONSTEXPR::Convertible<1>();
+            }
+            // C++20: concept
+            {
+                [[maybe_unused]] auto square1 = SFINAE::CONCEPT::Square(integer_num); // Вызов int Square(int);
+                [[maybe_unused]] auto square2 = SFINAE::CONCEPT::Square(floating_num); // Вызов float Square(float);
+                [[maybe_unused]] auto square3 = SFINAE::CONCEPT::Square(boolean);  // Вызов bool Square(bool);
+                [[maybe_unused]] auto square4 = SFINAE::CONCEPT::Square(number_int); // Вызов Number<int>
+                [[maybe_unused]] auto square5 = SFINAE::CONCEPT::Square(number_float); // Вызов Number<float> Square(Number<float>);
+                [[maybe_unused]] auto square6 = SFINAE::CONCEPT::Square(number_boolean); // Вызов Number<bool>Square(Number<bool>);
             }
         }
         
         // CONTAINER
         {
-            using namespace CONTAINER;
+            using namespace SFINAE::CONTAINER;
+            
             constexpr const int number = 10;
             constexpr std::string_view value = "10";
             std::vector<int> numbers { 1,2,3,4,5 };
-            auto has_const_iterator1 = has_const_iterator<std::vector<int>>::value;
-            auto has_const_iterator2 = has_const_iterator<int>::value;
+            [[maybe_unused]] auto has_const_iterator1 = has_const_iterator<std::vector<int>>::value;
+            [[maybe_unused]] auto has_const_iterator2 = has_const_iterator<int>::value;
             
-            auto has_begin_value1 = has_begin_end<std::vector<int>>::begin_value;
-            auto has_end_value1 = has_begin_end<std::vector<int>>::end_value;
-            auto has_begin_value2 = has_begin_end<int>::end_value;
-            auto has_end_value2 = has_begin_end<int>::begin_value;
+            [[maybe_unused]] auto has_begin_value1 = has_begin_end<std::vector<int>>::begin_value;
+            [[maybe_unused]] auto has_end_value1 = has_begin_end<std::vector<int>>::end_value;
+            [[maybe_unused]] auto has_begin_value2 = has_begin_end<int>::end_value;
+            [[maybe_unused]] auto has_end_value2 = has_begin_end<int>::begin_value;
             
             // std::enable_if
             {
-                CONTAINER::ENABLE_IF::Print(numbers);
-                CONTAINER::ENABLE_IF::Print(number);
-                CONTAINER::ENABLE_IF::Print(value);
+                SFINAE::CONTAINER::ENABLE_IF::Print(numbers);
+                SFINAE::CONTAINER::ENABLE_IF::Print(number);
+                SFINAE::CONTAINER::ENABLE_IF::Print(value);
             }
             // constexpr
             {
-                CONTAINER::CONSTEXPR::Print(numbers);
-                CONTAINER::CONSTEXPR::Print(number);
-                CONTAINER::CONSTEXPR::Print(value);
+                SFINAE::CONTAINER::CONSTEXPR::Print(numbers);
+                SFINAE::CONTAINER::CONSTEXPR::Print(number);
+                SFINAE::CONTAINER::CONSTEXPR::Print(value);
             }
             
             /*
@@ -627,20 +642,20 @@ int main()
                     common::variadic::Print_Numeric((int)1, (double)2.0, (float)3.0);
                     // auto abs3 = common::abs((float)1.0); // Ошибка: не указан тип float
                     
-                    auto allArithmetic1 = common::variadic::Has_All_Arithmetic(5, true, 5.5, false); // false
-                    auto allArithmetic2 = common::variadic::Has_All_Arithmetic(5, 5.5); // true
-                    auto anyArithmetic1 = common::variadic::Has_Any_Arithmetic(5, true, 5.5, false); // true
-                    auto anyArithmetic2 = common::variadic::Has_Any_Arithmetic(true, false); // true
-                    auto noneArithmetic1 = common::variadic::Has_None_Arithmetic(5, true, 5.5, false); // false
-                    auto noneArithmetic2 = common::variadic::Has_None_Arithmetic(5, 5.5); // false
-                    auto noneArithmetic3 = common::variadic::Has_None_Arithmetic(true, false); // false
+                    [[maybe_unused]] auto allArithmetic1 = common::variadic::Has_All_Arithmetic(5, true, 5.5, false); // false
+                    [[maybe_unused]] auto allArithmetic2 = common::variadic::Has_All_Arithmetic(5, 5.5); // true
+                    [[maybe_unused]] auto anyArithmetic1 = common::variadic::Has_Any_Arithmetic(5, true, 5.5, false); // true
+                    [[maybe_unused]] auto anyArithmetic2 = common::variadic::Has_Any_Arithmetic(true, false); // true
+                    [[maybe_unused]] auto noneArithmetic1 = common::variadic::Has_None_Arithmetic(5, true, 5.5, false); // false
+                    [[maybe_unused]] auto noneArithmetic2 = common::variadic::Has_None_Arithmetic(5, 5.5); // false
+                    [[maybe_unused]] auto noneArithmetic3 = common::variadic::Has_None_Arithmetic(true, false); // false
                 }
                 // custom
                 {
-                    auto operation1 = custom::details::Operation<int>;  // true
-                    auto operation2 = custom::details::Operation<char>; // true
-                    auto operation3 = custom::details::Operation<std::string>; // false
-                    auto operation4 = custom::details::Operation<Point>; // false
+                    [[maybe_unused]] auto operation1 = custom::details::Operation<int>;  // true
+                    [[maybe_unused]] auto operation2 = custom::details::Operation<char>; // true
+                    [[maybe_unused]] auto operation3 = custom::details::Operation<std::string>; // false
+                    [[maybe_unused]] auto operation4 = custom::details::Operation<Point>; // false
                     
                     custom::Sort(points.begin(), points.end());
                     custom::Print(points);
@@ -659,14 +674,14 @@ int main()
                 {
                     // auto resultReturn = CONCEPT::AUTO::NothingReturn(); // Ошибка NothingReturn ничего не возвращает
                     CONCEPT::AUTO::DrawShape(point);
-                    auto shape1 = CONCEPT::AUTO::GetShape1();
-                    auto shape2 = CONCEPT::AUTO::GetShape2();
+                    [[maybe_unused]] auto shape1 = CONCEPT::AUTO::GetShape1();
+                    [[maybe_unused]] auto shape2 = CONCEPT::AUTO::GetShape2();
                     
-                    auto abs1 = CONCEPT::AUTO::ABS((int)1);
-                    auto abs2 = CONCEPT::AUTO::ABS((double)1.0);
+                    [[maybe_unused]] auto abs1 = CONCEPT::AUTO::ABS((int)1);
+                    [[maybe_unused]] auto abs2 = CONCEPT::AUTO::ABS((double)1.0);
                     
-                    auto size1 = CONCEPT::AUTO::GetSize(points);
-                    auto size2 = CONCEPT::AUTO::GetSize(1.0);
+                    [[maybe_unused]] auto size1 = CONCEPT::AUTO::GetSize(points);
+                    [[maybe_unused]] auto size2 = CONCEPT::AUTO::GetSize(1.0);
                     
                     CONCEPT::AUTO::Print(1.1);
                 }
@@ -675,10 +690,10 @@ int main()
                     std::array<Point, 1> pointsArray = {points.front()};
                     std::list<Point> pointsList(points.begin(), points.end());
                     
-                    std::cout<< CONCEPT::metafunction::Info<decltype(points)>::type << std::endl;
-                    std::cout<< CONCEPT::metafunction::Info<decltype(pointsArray)>::type << std::endl;
-                    std::cout<< CONCEPT::metafunction::Info<decltype(pointsList)>::type << std::endl;
-                    std::cout<< CONCEPT::metafunction::Info<decltype(point)>::type << std::endl;
+                    std::cout << CONCEPT::metafunction::Info<decltype(points)>::type << std::endl;
+                    std::cout << CONCEPT::metafunction::Info<decltype(pointsArray)>::type << std::endl;
+                    std::cout << CONCEPT::metafunction::Info<decltype(pointsList)>::type << std::endl;
+                    std::cout << CONCEPT::metafunction::Info<decltype(point)>::type << std::endl;
                 }
             }
         }

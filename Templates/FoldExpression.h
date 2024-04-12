@@ -81,7 +81,7 @@ namespace fold_expression
 
     // 1 Способ
     template<typename TType, typename ...TArgs>
-    inline constexpr std::integral_constant<unsigned, sizeof ...(TArgs)> CountArgsFunction( TType(*function)(TArgs ...))
+    inline constexpr std::integral_constant<unsigned, sizeof ...(TArgs)> CountArgsFunction(TType(*function)(TArgs ...))
     {
        return std::integral_constant<unsigned, sizeof ...(TArgs)>{};
     }
@@ -114,7 +114,7 @@ namespace fold_expression
     }
 
     // C++20
-    inline constexpr void Print(const auto&... args) // Сокращенный шаблон
+    inline constexpr void Print(const auto&&... args) // Сокращенный шаблон
     {
         ((std::cout << args << ", "), ...);
         std::cout << std::endl;
@@ -123,7 +123,7 @@ namespace fold_expression
     // C++17
     /*
      template <typename ...TArgs>
-     inline void Print(const TArgs&... args)
+     inline void Print(const TArgs&&... args)
      {
          ((std::cout << args << ", "), ...);
          std::cout << std::endl;

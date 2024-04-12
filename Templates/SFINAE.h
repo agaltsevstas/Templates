@@ -69,7 +69,7 @@ namespace SFINAE
     }
 
     /*
-    * Чтобы решить проблему Number<int>, нужны два шаблона функций, которые проверяют передаваемый тип на арифметическу.
+    * C++14: Чтобы решить проблему Number<int>, нужны два шаблона функций, которые проверяют передаваемый тип на арифметическу.
     */
     namespace ENABLE_IF
     {
@@ -90,7 +90,7 @@ namespace SFINAE
     }
 
     /*
-      Здесь используется только один шаблон функции (что упрощает код вместо std::enable_if).
+      C++17: Здесь используется только один шаблон функции (что упрощает код вместо std::enable_if).
       Компилятор берет только ветку с истинным условием (true) и отбрасывает другие.
     */
     namespace CONSTEXPR
@@ -116,6 +116,33 @@ namespace SFINAE
                 std::cout << typeid(Constant).name() << " convertible to: int" << std::endl;
             else
                 std::cout << "not convertible" << std::endl;
+        }
+    }
+
+    /*
+      C++20: Концепты компилируются быстрее обычного SFINAE (std::enable_if и constexpr) и условия в них можно расширять. Версия C++20 вернулась обратно к двум функциям, но теперь код намного читабельнее, чем с std::enable_if.
+    */
+    namespace CONCEPT
+    {
+        template<typename T>
+        concept Arithmetic = std::is_arithmetic<T>::value;
+
+        template <typename T>
+        concept has_member_value = requires (const T& t)
+        {
+            std::is_arithmetic<decltype(T::value)>::value;
+        };
+
+        template<Arithmetic T>
+        T Square(const T& number)
+        {
+            return number * number;
+        }
+
+        template<has_member_value T>
+        T Square(const T& number)
+        {
+            return number.value * number.value;
         }
     }
 
