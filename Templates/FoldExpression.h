@@ -79,11 +79,17 @@ namespace fold_expression
         return sizeof...(args);
     }
 
+    template<typename ...TArgs>
+    inline constexpr int CountTypes(TArgs&& ...args)
+    {
+        return sizeof...(TArgs);
+    }
+
     // 1 Способ
     template<typename TType, typename ...TArgs>
     inline constexpr std::integral_constant<unsigned, sizeof ...(TArgs)> CountArgsFunction(TType(*function)(TArgs ...))
     {
-       return std::integral_constant<unsigned, sizeof ...(TArgs)>{};
+        return std::integral_constant<unsigned, sizeof ...(TArgs)>{};
     }
 
     // 2 Способ

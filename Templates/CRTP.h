@@ -2,6 +2,11 @@
 #define CRTP_h
 
 /*
+ Сайты: https://infotraining.bitbucket.io/cpp-adv/variadic-templates.html
+ */
+
+
+/*
  CRTP (curiously recurring template pattern) - рекурсивный шаблон: класс Derived наследуется от шаблонного класса Base, использующего Derived как шаблонный параметр T. Через метод базового класса Base можно вызвать метод наследуемого класса Derived, используя статический полиморфизм вместо динамического полиморфизма (без таблицы виртуальных функций): static_cast<T*>(this)->method()
  Плюсы:
  - делается во время компиляции (compile), а не во время исполнения (runtime)
@@ -80,6 +85,53 @@ namespace CRTP
         struct Singleton1 : public Singleton<Singleton1>{};
         struct Singleton2 : public Singleton<Singleton2>{};
     }
+
+    template <typename T>
+    class Counter
+    {
+    public:
+        Counter() noexcept { ++_counter; }
+        ~Counter() noexcept { --_counter; }
+        static size_t count() noexcept { return _counter; }
+    private:
+        inline static size_t _counter;
+    };
+
+    template <typename T>
+    class Equal
+    {
+        friend bool operator==(const T& lhs, const T& rhs) { return lhs.equal_to(rhs); }
+        friend bool operator!=(const T& lhs, const T& rhs) { return !lhs.equal_to(rhs); }
+    };
+
+    template <typename T>
+    class Compare
+    {
+        friend bool operator<(const T& lhs, const T& rhs) { return lhs.less_than(rhs); }
+        friend bool operator<=(const T& lhs, const T& rhs) { return !lhs.less_than(rhs); }
+        friend bool operator>(const T& lhs, const T& rhs) { return lhs.less_than(rhs); }
+        friend bool operator>=(const T& lhs, const T& rhs) { return !lhs.less_than(rhs); }
+    };
+
+    template <template <typename> class... CRTPs>
+    struct Variadic : public CRTPs<Variadic<CRTPs...>>...
+    {
+        Variadic(int value = 0) : _value(value)
+        {}
+
+        bool equal_to(const Variadic& other) const
+        {
+            return _value == other._value;
+        }
+
+        bool less_than(const Variadic& other) const
+        {
+            return _value < other._value;
+        }
+        
+    private:
+        int _value;
+    };
 }
 
 #endif /* CRTP_h */

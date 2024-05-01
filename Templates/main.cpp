@@ -4,6 +4,7 @@
 #include "Callback.h"
 #include "Forward.h"
 #include "Instantiation.h"
+#include "invoke_apply.h"
 #include "Concept.h"
 #include "CRTP.h"
 #include "FoldExpression.h"
@@ -14,10 +15,12 @@
 #include "SFINAE.h"
 #include "Specialization.h"
 #include "typedef_using.h"
+#include "Tuple.h"
 #include "VariadicTemplate.h"
 
 #include <array>
 #include <list>
+
 
 /*
  Сайты: http://scrutator.me/post/2017/08/11/cpp17_lang_features_p1.aspx
@@ -31,7 +34,29 @@
  extern template : https://isocpp.org/wiki/faq/templates#separate-template-fn-defn-from-decl
  metafunction: https://habr.com/ru/articles/337590/
                http://scrutator.me/post/2017/04/10/has_function_metaprogramming.aspx
+ invoke, apply: http://scrutator.me/post/2018/05/25/cpp17_lang_features_p4.aspx
+                https://habr.com/ru/companies/pvs-studio/articles/340014/
+                https://habr.com/ru/companies/otus/articles/656363/
+                https://stackoverflow.com/questions/38222029/variadic-members-in-non-template-class?rq=3
+                https://www.vishalchovatiya.com/variadic-template-cpp-implementing-unsophisticated-tuple/
+                https://www.itcodar.com/c-plus-1/template-tuple-calling-a-function-on-each-element.html
+                https://medium.com/@raghavmnnit/variadic-templates-and-function-arguments-part2-1d35d06730d9
+ CRTP, variadic: https://infotraining.bitbucket.io/cpp-adv/variadic-templates.html
  matching: https://habr.com/ru/articles/282630/
+ tuple: https://www.itcodar.com/c-plus-1/template-tuple-calling-a-function-on-each-element.html
+        https://infotraining.bitbucket.io/cpp-adv/variadic-templates.html
+        https://www.scs.stanford.edu/~dm/blog/param-pack.html
+        https://github.com/VladimirBalun/Metaprogramming/blob/master/tuple.hpp
+        https://github.com/jfalcou/kumi/blob/main/include/kumi/tuple.hpp
+        https://github.com/glebzlat/tuple/blob/main/include/Tuple.hpp
+        https://github.com/VladimirBalun/Metaprogramming/blob/master/tuple.hpp
+        https://chromium.googlesource.com/external/github.com/domokit/base/+/0032c8e1a72eb85d947d8df8de503caa62b4d0a8/tuple.h
+        https://mitchnull.blogspot.com/2012/06/c11-tuple-implementation-details-part-1.html
+        https://www.vishalchovatiya.com/variadic-template-cpp-implementing-unsophisticated-tuple/
+        https://stackoverflow.com/questions/4041447/how-is-stdtuple-implemented
+        https://gist.github.com/seiren-naru-shirayuri/d0493137d688eb91277d00e0ed48b9a2
+        https://gist.github.com/ericniebler/fa621a311acd2f0339c57e01824c654c
+        https://gist.github.com/IvanVergiliev/9639530
  */
 
 
@@ -188,6 +213,7 @@ int main()
     */
     {
         using namespace instantiation;
+        std::cout << "instantiation" << std::endl;
         
         Instantiation instance;
         [[maybe_unused]] auto implicitCountArguments1 = instance.ImplicitCountArgs(1);
@@ -210,6 +236,7 @@ int main()
      */
     {
         using namespace specialization;
+        std::cout << "specialization" << std::endl;
         
         Person<std::string, std::string> nick("Nick", "20"); // Основной шаблон (primary template)
         Person<std::string, int> alex("Alex", 21); // Основной шаблон (primary template)
@@ -255,6 +282,7 @@ int main()
      */
     {
         using namespace non_type;
+        std::cout << "non type" << std::endl;
         
         [[maybe_unused]] array1<int, 10> a1;
         [[maybe_unused]] array2<int, 10> a2;
@@ -268,7 +296,7 @@ int main()
         Print<int, 10>(); // C++14: способ передать non-type template параметр с неизвестным типом была передача двух параметров – типа и значения
         
         // С++20: вещественные числа
-        [[maybe_unused]] auto sum_result2 = Sum<1, 2, 3>(); // C++17: можно писать auto для non-type template параметров, вещественные числа передать нельзя
+        [[maybe_unused]] auto constexpr sum_result2 = Sum<1, 2, 3>(); // C++17: можно писать auto для non-type template параметров, вещественные числа передать нельзя
         
         [[maybe_unused]] constexpr Value<int> v1(2); // Без constexpr будет ошибка
         [[maybe_unused]] constexpr Value<double> v2(2.5); // Без constexpr будет ошибка
@@ -319,8 +347,8 @@ int main()
      */
     {
         using namespace FORWARD;
-        
         std::cout << "FORWARD" << std::endl;
+        
         int number = 1;
         Function(number); // lvalue: T - int&, arg - int&, std::cout << "&" << "&&" << "&" << std::endl;
         Function(0); // rvalue: T - int, arg - int&&, std::cout << "&" << "&&" << "&&" << std::endl;
@@ -352,10 +380,33 @@ int main()
      */
     {
         using namespace variadic_template;
+        std::cout << "variadic template" << std::endl;
         
         MeasureProperty property = MeasureProperty::Two;
         CheckProperty(property, MeasureProperty::One, MeasureProperty::Two, MeasureProperty::Three);
         print("one", std::string{"two"}, 3, 4.0);
+        [[maybe_unused]] auto vec = Vector(1, 2, 3, 4, 5);
+        
+        [[maybe_unused]] Sequence<IndexSequence<1, 2, 3>, int, char, double> sequence;
+        /// Все пакеты в одном выражении распаковки должны иметь одинаковый размер
+        // scale_and_print<1, 2>(3.14, 2, 3.0f); // Ошибка
+        scale_and_print<1, 2, 3>(3.14, 2, 3.0f); // print(1 * 3.14, 2 * 2, 3 * 3.0)
+        
+        /// Примеси
+        Mixin<std::vector<int>, std::string> mixin({ 1, 2, 3 }, "text");
+        [[maybe_unused]] auto string_size = mixin.std::string::size();
+        [[maybe_unused]] auto vector_size = mixin.std::vector<int>::size();
+        
+        CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic1(10);
+        CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic2(20);
+        CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic3(10);
+
+        [[maybe_unused]] auto compare1 = variadic1 < variadic2;
+        [[maybe_unused]] auto compare2 = variadic1 > variadic2;
+        [[maybe_unused]] auto compare3 = variadic1 < variadic2;
+        [[maybe_unused]] auto compare4 = variadic1 > variadic2;
+        [[maybe_unused]] auto compare5 = variadic1 == variadic3;
+        [[maybe_unused]] auto compare6 = variadic1 != variadic3;
     }
     /*
      Fold expression (выражение свертки) - шаблон с заранее неизвестным числом аргументов (variadic template). Свертка – это функция, которая применяет заданную комбинирующую функцию к последовательным парам элементов в списке и возвращает результат. Любое выражение свёртки должно быть заключено в скобки и в общем виде выглядит так: (выражение содержащее пачку аргументов). Выражение внутри скобок должно содержать в себе нераскрытую пачку параметров и один из следующих операторов:
@@ -367,6 +418,7 @@ int main()
      */
     {
         using namespace fold_expression;
+        std::cout << "fold expression" << std::endl;
         std::vector<int> numbers;
         
         [[maybe_unused]] auto sum_result1 = Sum(1, 2, 3);
@@ -375,6 +427,7 @@ int main()
         [[maybe_unused]] auto pow_sum_result = Pow_Sum(1, 2, 3);
         Push_To_Vector(numbers, 1, 2, 3, 4, 5);
         [[maybe_unused]] auto countArguments = CountArgs(1, "hello", 2.f);
+        [[maybe_unused]] auto countTypes = CountTypes(1, "hello", 2.f);
         [[maybe_unused]] auto countArgumentsFunction = CountArgsFunction(Func).value;
         CheckTypes(int(1), std::string("hello"), double(2.0));
         Print_Strings("one", std::string{"two"});
@@ -382,6 +435,7 @@ int main()
     // Lambda можно передавать шаблоны только при аргументах
     {
         using namespace LAMBDA;
+        std::cout << "LAMBDA" << std::endl;
         
         int number = 10;
         // До C++20
@@ -425,6 +479,7 @@ int main()
     // callback
     {
         using namespace callback;
+        std::cout << "callback" << std::endl;
         
         Example example;
         Permission(example, &Example::Method).Run();
@@ -440,6 +495,7 @@ int main()
      */
     {
         using namespace function;
+        std::cout << "function" << std::endl;
         
         std::shared_ptr<Base> pBase1 = std::make_shared<Derived1>();
         std::shared_ptr<Base> pBase2 = std::make_shared<Derived2>();
@@ -458,8 +514,143 @@ int main()
         CallFunction3(derived1);
         CallFunction3(derived2);
     }
+    // invoke & apply
+    {
+        using namespace invoke_apply;
+        
+        int number1 = 1;
+        int number2 = 2;
+        Print example {10};
+        std::tuple tuple {1, 1.5, 'c', "str"};
+        
+        /*
+         std::invoke - шаблонная функция, оборачивающая и вызывающая ЛЮБОЙ объект с аргументами (ссылки, указатели, члены/функции-члены класса/структуры), в отличие от std::function и без SFINAE (constexpr).
+         */
+        {
+            std::cout << "std::invoke" << std::endl;
+            
+            // 1 Способ: обычный
+            {
+                std::cout << "1 Способ: обычный" << std::endl;
+                
+                std::invoke(print<int, int>, 1, 2);
+                std::invoke(print<int, int>, number1, number2);
+                std::invoke(Print(), 1, 2);
+                std::invoke(Print(), number1, number2);
+                std::invoke(&Print::print<int, int>, example, 1, 2);
+                std::invoke(&Print::print<int, int>, example, number1, number2);
+                std::invoke(&Print::SetValue, &example, number2);
+                [[maybe_unused]] auto value = std::invoke(&Print::GetValue, example);
+                
+                std::cout << std::endl;
+            }
+            // 2 Способ: lambda
+            {
+                std::cout << "2 Способ: lambda" << std::endl;
+                
+                std::invoke([&](){ print(1, 2); });
+                std::invoke([&](){ print(number1, number2); });
+                std::invoke([&](){ Print()(1, 2); });
+                std::invoke([&](){ Print()(number1, number2); });
+                std::invoke([&](){ example.print(1, 2); });
+                std::invoke([&](){ example.print(number1, number2); });
+                std::invoke([&](){ example.SetValue(number2); });
+                [[maybe_unused]] auto value = std::invoke([&](){ return example.GetValue(); });
+                
+                std::cout << std::endl;
+            }
+            // 3 Способ: in template function
+            {
+                std::cout << "3 Способ: in function" << std::endl;
+                
+                CallInvoke(print<int, int>, 1, 2);
+                CallInvoke(print<int, int>, number1, number2);
+                CallInvoke(Print(), 1, 2);
+                CallInvoke(Print(), number1, number2);
+                CallInvoke(&Print::print<int, int>, example, 1, 2);
+                CallInvoke(&Print::print<int, int>, example, number1, number2);
+                CallInvoke(&Print::SetValue, &example, number2);
+                [[maybe_unused]] auto value = CallInvoke(&Print::GetValue, example);
+                
+                std::cout << std::endl;
+            }
+        }
+        /*
+         std::apply - шаблонная функция, аналог std::invoke, но принимающая аргументы в качестве кортежа (std::tuple) и разворачивающая с помощью функции std::get<> Использование: когда нужно сохранить элементы в кортеж и использовать их позже (Например, в классе сохранять).
+         */
+        {
+            std::cout << "std::apply" << std::endl;
+            
+            // 1 Способ: обычный
+            {
+                std::cout << "1 Способ: обычный" << std::endl;
+                
+                std::apply(print<int, int>, std::tuple{1, 2});
+                std::apply(print<int, int>, std::tuple{number1, number2});
+                std::apply(print<int, double, char, std::string>, tuple);
+                std::apply(Print(), std::tuple{1, 2});
+                std::apply(Print(), std::tuple{number1, number2});
+                std::apply(Print(), tuple);
+                std::apply(&Print::print<int, int>, std::tuple{example, 1, 2});
+                std::apply(&Print::print<int, int>, std::tuple{example, number1, number2});
+                std::apply(&Print::SetValue, std::tuple{example, number2});
+                [[maybe_unused]] auto value = std::tuple(&Print::GetValue, std::tuple{example});
+                
+                std::cout << std::endl;
+            }
+            // 2 Способ: lambda
+            {
+                std::cout << "2 Способ: lambda" << std::endl;
+                
+                std::apply([](auto&& ...args)
+               {
+                    ((std::cout << args << ", "), ...);
+                    std::cout << std::endl;
+                }, std::tuple{1, 2});
+                
+                std::apply([&](auto&& ...args)
+               {
+                    print(std::forward<decltype(args)>(args)...);
+                }, std::tuple{number1, number2});
+                
+                std::apply([&](auto&& ...args)
+               {
+                    print(std::forward<decltype(args)>(args)...);
+                }, tuple);
+                
+                std::apply([&](auto&& ...args){ Print()(std::forward<decltype(args)>(args)...); }, std::tuple{1, 2});
+                std::apply([&](auto&& ...args){ Print()(std::forward<decltype(args)>(args)...); }, std::tuple{number1, number2});
+                std::apply([&](auto&& ...args){ Print()(std::forward<decltype(args)>(args)...); }, tuple);
+                std::apply([&](auto&& ...args){ example.print(std::forward<decltype(args)>(args)...); }, std::tuple{1, 2});
+                std::apply([&](auto&& ...args){ example.print(std::forward<decltype(args)>(args)...); }, std::tuple{number1, number2});
+                std::apply([&](auto&& ...args){ example.SetValue(std::forward<decltype(args)>(args)...); }, std::tuple{number2});
+                [[maybe_unused]] auto value = std::tuple([&](){ return example.GetValue(); });
+                
+                std::cout << std::endl;
+            }
+            // 3 Способ: in function
+            {
+                std::cout << "3 Способ: in function" << std::endl;
+                
+                CallApply(print<int, int>, std::tuple{1, 2});
+                CallApply(print<int, int>, std::tuple{number1, number2});
+                CallApply(print<int, double, char, std::string>, tuple);
+                CallApply(Print(), std::tuple{1, 2});
+                CallApply(Print(), std::tuple{number1, number2});
+                CallApply(Print(), tuple);
+                CallApply(&Print::print<int, int>, std::tuple{&example, 1, 2});
+                CallApply(&Print::print<int, int>, std::tuple{&example, number1, number2});
+                CallApply(&Print::SetValue, std::tuple{&example, number2});
+                [[maybe_unused]] auto value = CallApply(&Print::GetValue, std::tuple{&example});
+                
+                std::cout << std::endl;
+            }
+        }
+    }
     // metafunction
     {
+        std::cout << "metafunction" << std::endl;
+        
         [[maybe_unused]] auto is_same_1 = metafunction::is_same<int, int32_t>::value;
         [[maybe_unused]] auto is_same_2 = metafunction::is_same<int, std::string>::value;
         [[maybe_unused]] auto squareRes = metafunction::Square<5>::value;
@@ -487,13 +678,25 @@ int main()
      - у всех классов-наследников должны определены методы, которые вызываются в базовом классе
     */
     {
+        std::cout << "CRTP" << std::endl;
+        
         CRTP::Derived derived;
         derived.Interface1();
         derived.Interface2();
         
         [[maybe_unused]] auto& singleton1 = CRTP::SINGLETON::Singleton1::Instance();
         [[maybe_unused]] auto& singleton2 = CRTP::SINGLETON::Singleton2::Instance();
+        
+        CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic1(10);
+        CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic2(20);
+        CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic3(10);
 
+        [[maybe_unused]] auto compare1 = variadic1 < variadic2;
+        [[maybe_unused]] auto compare2 = variadic1 > variadic2;
+        [[maybe_unused]] auto compare3 = variadic1 < variadic2;
+        [[maybe_unused]] auto compare4 = variadic1 > variadic2;
+        [[maybe_unused]] auto compare5 = variadic1 == variadic3;
+        [[maybe_unused]] auto compare6 = variadic1 != variadic3;
     }
     /*
      SFINAE (substitution failure is not an error) - при определении перегрузок функции ошибочные подстановки в шаблоны не вызывают ошибку компиляции, а отбрасываются из списка кандидатов на наиболее подходящую перегрузку.
@@ -508,6 +711,7 @@ int main()
         // Square
         {
             using namespace SFINAE;
+            std::cout << "SFINAE" << std::endl;
             
             int integer_num = 5;
             float floating_num = 5.0;
@@ -567,6 +771,7 @@ int main()
         // CONTAINER
         {
             using namespace SFINAE::CONTAINER;
+            std::cout << "CONTAINER" << std::endl;
             
             constexpr const int number = 10;
             constexpr std::string_view value = "10";
@@ -600,6 +805,7 @@ int main()
             */
             {
                 using namespace CONCEPT;
+                std::cout << "CONCEPT" << std::endl;
 
                 Point point;
                 DerivedPoint derivedPoint;
@@ -703,6 +909,7 @@ int main()
      */
     {
         using namespace matching;
+        std::cout << "matching" << std::endl;
         
         Match([](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
               [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
@@ -710,7 +917,83 @@ int main()
               [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
               [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
               )(1, 1, 1);
-        return 0;
+    }
+    /*
+     Tuple (Кортеж) - коллекция элементов с фиксированным размером, содержащая разнородные значения. Для реализации кортежа используется идиома Head/Tail с помощью Variadic Template - шаблон с заранее неизвестным числом аргументов.
+     */
+    {
+        using namespace tuple;
+        std::cout << "tuple" << std::endl;
+        
+        /// first implementation
+        {
+            using namespace first_implementation;
+            std::cout << "first implementation" << std::endl;
+            
+            static_assert(Tuple<>::value == 0, "must be 0");
+            static_assert(Tuple<int, double, std::string&>::value == 3, "must be 3");
+            
+            Tuple<int, double, char, std::string> tuple(1, 10.0, 'c', "abc");
+            Tuple tuple_deduction1{1, 10.0, 'c', "ABC"};
+            Tuple tuple_deduction2 = Tuple(1, 10.0, 'c', "ABC");
+            
+            [[maybe_unused]] auto value_int = Get<0>(tuple);
+            [[maybe_unused]] auto value_double = Get<1>(tuple);
+            [[maybe_unused]] auto value_char = Get<2>(tuple);
+            [[maybe_unused]] auto value_string = Get<3>(tuple);
+            [[maybe_unused]] auto make_tuple = Make_Tuple(1, 10.0, 'c');
+            [[maybe_unused]] auto size = tuple.Size();
+            [[maybe_unused]] auto ebo1 = sizeof(Tuple<dummy<0>, dummy<1>, dummy<2>>); // 1
+            [[maybe_unused]] auto ebo2 = sizeof(Tuple<dummy<0>, dummy<0>, dummy<0>>); // 3
+        }
+        /// second implementation
+        {
+            using namespace second_implementation;
+            std::cout << "second implementation" << std::endl;
+            
+            static_assert(Tuple<>::value == 0, "must be 0");
+            static_assert(Tuple<int, double, std::string&>::value == 3, "must be 3");
+            
+            Tuple<int, double, char, std::string> tuple(1, 10.0, 'c', "abc");
+            Tuple tuple_deduction1{1, 10.0, 'c', "ABC"};
+            Tuple tuple_deduction2 = Tuple(1, 10.0, 'c', "ABC");
+            
+            [[maybe_unused]] auto value_int = Get<0>(tuple);
+            [[maybe_unused]] auto value_double = Get<1>(tuple);
+            [[maybe_unused]] auto value_char = Get<2>(tuple);
+            [[maybe_unused]] auto value_string = Get<3>(tuple);
+            [[maybe_unused]] auto make_tuple = Make_Tuple(1, 10.0, 'c');
+            [[maybe_unused]] auto size = tuple.Size();
+            [[maybe_unused]] auto ebo1 = sizeof(Tuple<dummy<0>, dummy<1>, dummy<2>>); // 1
+            [[maybe_unused]] auto ebo2 = sizeof(Tuple<dummy<0>, dummy<0>, dummy<0>>); // 3
+        }
+        /// third implementation
+        {
+            using namespace third_implementation;
+            std::cout << "third implementation" << std::endl;
+            
+            static_assert(Tuple<>::value == 0, "must be 0");
+            static_assert(Tuple<int, double, std::string&>::value == 3, "must be 3");
+            
+            Tuple<int, double, char, std::string> tuple(1, 10.0, 'c', "abc");
+            Tuple tuple_deduction1{1, 10.0, 'c', "ABC"};
+            Tuple tuple_deduction2 = Tuple(1, 10.0, 'c', "ABC");
+            
+            [[maybe_unused]] auto value_int = Get<0>(tuple);
+            [[maybe_unused]] auto value_double = Get<1>(tuple);
+            [[maybe_unused]] auto value_char = Get<2>(tuple);
+            [[maybe_unused]] auto value_string = Get<3>(tuple);
+            [[maybe_unused]] auto make_tuple = Make_Tuple(1, 10.0, 'c');
+            [[maybe_unused]] auto size = tuple.Size();
+            [[maybe_unused]] auto ebo1 = sizeof(Tuple<dummy<0>, dummy<1>, dummy<2>>); // 1
+            [[maybe_unused]] auto ebo2 = sizeof(Tuple<dummy<0>, dummy<0>, dummy<0>>); // 3
+            
+            [[maybe_unused]] auto make_ref_tuple = Make_Ref_Tuple(value_int, value_double, value_char, value_string);
+            Get<0>(make_ref_tuple) = 10;
+            Get<1>(make_ref_tuple) = 100.0;
+            Get<2>(make_ref_tuple) = 'C';
+            Get<3>(make_ref_tuple) = "ABC";
+        }
     }
     
     return 0;

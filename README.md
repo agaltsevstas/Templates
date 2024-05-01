@@ -216,14 +216,14 @@ Substitution Failure Is Not An Error - при определении перег�
 Паттерн сопоставляющий типы, который можно рассматривать как обобщение оператора switch-case.
 
 # Сайты: 
-[http://scrutator.me/post/2017/08/11/cpp17_lang_features_p1.aspx](http://scrutator.me/post/2017/08/11/cpp17_lang_features_p1.aspx) <br/>
-[http://scrutator.me/post/2017/04/10/has_function_metaprogramming.aspx](http://scrutator.me/post/2017/04/10/has_function_metaprogramming.aspx) <br/>
-[https://cpp-kt.github.io/cpp-notes/14_templates.html](https://cpp-kt.github.io/cpp-notes/14_templates.html) <br/>
-[https://iamsorush.com/posts/cpp-variadic-template/](https://iamsorush.com/posts/cpp-variadic-template/) <br/>
-[https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file/495056#495056](https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file/495056#495056) <br/>
-[https://www.scs.stanford.edu/~dm/blog/param-pack.html](https://www.scs.stanford.edu/~dm/blog/param-pack.html) <br/>
-[https://stackoverflow.com/questions/2351148/explicit-template-instantiation-when-is-it-used](https://stackoverflow.com/questions/2351148/explicit-template-instantiation-when-is-it-used) <br/>
-[https://gist.github.com/sergeysablin99/1eb61b51fb58d5ae0a58ac1424c249c6](https://gist.github.com/sergeysablin99/1eb61b51fb58d5ae0a58ac1424c249c6) <br/>
+[Языковые новшества C++17. Часть 1. Свёртка и выведение](http://scrutator.me/post/2017/08/11/cpp17_lang_features_p1.aspx) <br/>
+[А есть ли функция?](http://scrutator.me/post/2017/04/10/has_function_metaprogramming.aspx) <br/>
+[Шаблоны](https://cpp-kt.github.io/cpp-notes/14_templates.html) <br/>
+[What are C++ variadic templates and fold expressions?](https://iamsorush.com/posts/cpp-variadic-template/) <br/>
+[Why can templates only be implemented in the header file?](https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file/495056#495056) <br/>
+[C++20 idioms for parameter packs](https://www.scs.stanford.edu/~dm/blog/param-pack.html) <br/>
+[Explicit template instantiation - when is it used?](https://stackoverflow.com/questions/2351148/explicit-template-instantiation-when-is-it-used) <br/>
+[Парадигмы ООП. Полиморфизм (статический, динамический). Инкапсуляция. Наследование. Примеры динамического и статического полиморфизмов](https://gist.github.com/sergeysablin99/1eb61b51fb58d5ae0a58ac1424c249c6) <br/>
 [extern template](https://isocpp.org/wiki/faq/templates#separate-template-fn-defn-from-decl) <br/>
 [metafunction](https://habr.com/ru/articles/337590/) <br/>
 [metafunction](http://scrutator.me/post/2017/04/10/has_function_metaprogramming.aspx) <br/>

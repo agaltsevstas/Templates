@@ -27,17 +27,19 @@
     <ClInclude Include="Forward.h" />
     <ClInclude Include="Function.h" />
     <ClInclude Include="Instantiation.h" />
+    <ClInclude Include="invoke_apply.h" />
     <ClInclude Include="Matching.h" />
     <ClInclude Include="Metafunction.h" />
     <ClInclude Include="Non-type.h" />
     <ClInclude Include="SFINAE.h" />
     <ClInclude Include="Specialization.h" />
+    <ClInclude Include="Tuple.h" />
     <ClInclude Include="typedef_using.h" />
     <ClInclude Include="VariadicTemplate.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Instantiation.cpp" />
-    <ClCompile Include="Templates.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
