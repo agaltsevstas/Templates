@@ -46,9 +46,9 @@
  tuple: https://www.itcodar.com/c-plus-1/template-tuple-calling-a-function-on-each-element.html
         https://infotraining.bitbucket.io/cpp-adv/variadic-templates.html
         https://www.scs.stanford.edu/~dm/blog/param-pack.html
-        https://github.com/VladimirBalun/Metaprogramming/blob/master/tuple.hpp
         https://github.com/jfalcou/kumi/blob/main/include/kumi/tuple.hpp
         https://github.com/glebzlat/tuple/blob/main/include/Tuple.hpp
+        https://github.com/deepgrace/smp/blob/master/include/fuple.hpp
         https://github.com/VladimirBalun/Metaprogramming/blob/master/tuple.hpp
         https://chromium.googlesource.com/external/github.com/domokit/base/+/0032c8e1a72eb85d947d8df8de503caa62b4d0a8/tuple.h
         https://mitchnull.blogspot.com/2012/06/c11-tuple-implementation-details-part-1.html
