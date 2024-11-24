@@ -82,7 +82,7 @@ namespace FORWARD
     {
     public:
         A() { std::cout << "A construtor" << std::endl; } // Обычный конструктор
-        A(A&&) { std::cout << "A&& construtor" << std::endl; } // Конструктор перемещения
+        A(A&&) noexcept { std::cout << "A&& construtor" << std::endl; } // Конструктор перемещения
         A(A&) { std::cout << "A& construtor" << std::endl; } // Конструктор копирования
         A(const A&) { std::cout << "const A& construtor" << std::endl; } // Конструктор копирования перекроет
     };

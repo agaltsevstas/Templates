@@ -20,8 +20,8 @@ namespace invoke_apply
 
     struct Print
     {
-        int GetValue() noexcept { return value; }
-        void SetValue(int iValue) noexcept { value = iValue; }
+        int GetValue() const noexcept { return value; }
+        void SetValue(int iValue) { value = iValue; }
         
         void operator()(auto&&... args)
         {

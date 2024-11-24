@@ -7,33 +7,81 @@
 
 namespace matching
 {
-    namespace details
+    namespace C11
     {
-        template <class...>
-        struct Match;
-
-        template <class Head, class... Tail>
-        struct Match<Head, Tail...> : Match<Tail...>, Head
+        namespace details
         {
-            template <class Head2, class... Tail2>
-            Match(Head2&& head, Tail2&& ... tail) : Match<Tail...>(std::forward<Tail2>(tail)...), Head(std::forward<Head2>(head)) {}
-            using Head::operator();
-            using Match<Tail...>::operator();
-        };
+            template <class...>
+            struct Match;
 
-        template <class T>
-        struct Match<T> : T 
+            template <class Head, class... Tail>
+            struct Match<Head, Tail...> : Head, Match<Tail...>
+            {
+                template <class Head2, class... Tail2>
+                Match(Head2&& head, Tail2&& ... tail) : Head(std::forward<Head2>(head)), Match<Tail...>(std::forward<Tail2>(tail)...) {}
+                using Head::operator();
+                using Match<Tail...>::operator();
+            };
+
+            /// Закрытие рекурсии специализацией
+            template <class T>
+            struct Match<T> : T
+            {
+                template <class R>
+                Match(R&& r) noexcept : T(std::forward<R>(r)) {}
+                using T::operator();
+            };
+        }
+
+        template <class... TArgs>
+        auto Match(TArgs&&... args)
         {
-            template <class R>
-            Match(R&& r) : T(std::forward<R>(r)) {}
-            using T::operator();
-        };
+            return details::Match<typename std::decay<TArgs>::type...>{std::forward<TArgs>(args)...};
+        }
     }
 
-    template <class... TArgs>
-    auto Match(TArgs&&... args)
+    namespace C17
     {
-        return details::Match<typename std::decay<TArgs>::type...>{std::forward<TArgs>(args)...};
+        namespace first_implementation
+        {
+            namespace details
+            {
+                template <typename... TArgs>
+                struct Match : TArgs...
+                {
+                    using TArgs::operator()...;
+                    Match(TArgs&&... args) : TArgs(std::forward<TArgs>(args))... {}
+                };
+            }
+
+            template <class... TArgs>
+            auto Match(TArgs&&... args)
+            {
+                return details::Match<TArgs...>(std::forward<TArgs>(args)...);
+            }
+        }
+    
+        namespace second_implementation
+        {
+            template <typename... TArgs>
+            struct Match : TArgs...
+            {
+                using TArgs::operator()...;
+                Match(TArgs&&... args) : TArgs(std::forward<TArgs>(args))... {}
+            };
+        }
+    
+        namespace third_implementation
+        {
+            template <typename... TArgs>
+            struct Match : TArgs...
+            {
+                using TArgs::operator()...;
+            };
+        
+            /// Deduction hints: нет лишнего создания объектов и лишней передачив конструктор, создается только 1 объект и вызывается 1 конструктор
+            template <typename ...TArgs> Match(TArgs...) -> Match<TArgs...>;
+        }
     }
 }
 

@@ -42,6 +42,7 @@
                 https://www.itcodar.com/c-plus-1/template-tuple-calling-a-function-on-each-element.html
                 https://medium.com/@raghavmnnit/variadic-templates-and-function-arguments-part2-1d35d06730d9
  CRTP, variadic: https://infotraining.bitbucket.io/cpp-adv/variadic-templates.html
+                 https://www.fluentcpp.com/2018/06/22/variadic-crtp-opt-in-for-class-features-at-compile-time/
  matching: https://habr.com/ru/articles/282630/
  tuple: https://www.itcodar.com/c-plus-1/template-tuple-calling-a-function-on-each-element.html
         https://infotraining.bitbucket.io/cpp-adv/variadic-templates.html
@@ -104,7 +105,7 @@
  +=  -=  *=  /=  %=  ^=  &=  |=  <<=  >>=
  ==  !=  <=  >=  &&  ||  ,  .*  ->*
  
- Template argument deduction - способность шаблоннов определять тип передаваемых аргументов без явного указания типа: вместо foo<...>(...) можно foo(...). До C++17 при инстанцировании шаблона функции нужно было явно указывать типы аргументы: foo<...>(...).
+ CTAD (Сlass template argument deduction) - способность шаблоннов определять тип передаваемых аргументов без явного указания типа: вместо foo<...>(...) можно foo(...). До C++17 при инстанцировании шаблона функции нужно было явно указывать типы аргументы: foo<...>(...).
  
  Сокращенный шаблон (auto или Concept auto) - шаблонная функция, которая содержит auto в качестве типа аргумента или возвращающегося значения.
  Плюсы:
@@ -392,21 +393,36 @@ int main()
         // scale_and_print<1, 2>(3.14, 2, 3.0f); // Ошибка
         scale_and_print<1, 2, 3>(3.14, 2, 3.0f); // print(1 * 3.14, 2 * 2, 3 * 3.0)
         
-        /// Примеси
-        Mixin<std::vector<int>, std::string> mixin({ 1, 2, 3 }, "text");
-        [[maybe_unused]] auto string_size = mixin.std::string::size();
-        [[maybe_unused]] auto vector_size = mixin.std::vector<int>::size();
-        
-        CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic1(10);
-        CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic2(20);
-        CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic3(10);
+        /*
+         Примеси (mixIns) - это variadic CRTP, где шаблонный класс с заранее неизвестным числом аргументов наследуется от них.
+         Применение: с помощью примесей + std::visit c использованием lambda-функций можно извлекать значения из vector<variant<...>>
+         */
+        {
+            using namespace mixins;
+            std::cout << "mixins" << std::endl;
+            
+            Mixin<std::vector<int>, std::string> mixin({ 1, 2, 3 }, "text");
+            [[maybe_unused]] auto string_size = mixin.std::string::size();
+            [[maybe_unused]] auto vector_size = mixin.std::vector<int>::size();
+            
+            Mixin{[](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
+                  [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
+                  [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                  [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                  [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
+            }(1, 1, 1);
+            
+            CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic1(10);
+            CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic2(20);
+            CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic3(10);
 
-        [[maybe_unused]] auto compare1 = variadic1 < variadic2;
-        [[maybe_unused]] auto compare2 = variadic1 > variadic2;
-        [[maybe_unused]] auto compare3 = variadic1 < variadic2;
-        [[maybe_unused]] auto compare4 = variadic1 > variadic2;
-        [[maybe_unused]] auto compare5 = variadic1 == variadic3;
-        [[maybe_unused]] auto compare6 = variadic1 != variadic3;
+            [[maybe_unused]] auto compare1 = variadic1 < variadic2;
+            [[maybe_unused]] auto compare2 = variadic1 > variadic2;
+            [[maybe_unused]] auto compare3 = variadic1 < variadic2;
+            [[maybe_unused]] auto compare4 = variadic1 > variadic2;
+            [[maybe_unused]] auto compare5 = variadic1 == variadic3;
+            [[maybe_unused]] auto compare6 = variadic1 != variadic3;
+        }
     }
     /*
      Fold expression (выражение свертки) - шаблон с заранее неизвестным числом аргументов (variadic template). Свертка – это функция, которая применяет заданную комбинирующую функцию к последовательным парам элементов в списке и возвращает результат. Любое выражение свёртки должно быть заключено в скобки и в общем виде выглядит так: (выражение содержащее пачку аргументов). Выражение внутри скобок должно содержать в себе нераскрытую пачку параметров и один из следующих операторов:
@@ -855,6 +871,8 @@ int main()
                     [[maybe_unused]] auto noneArithmetic1 = common::variadic::Has_None_Arithmetic(5, true, 5.5, false); // false
                     [[maybe_unused]] auto noneArithmetic2 = common::variadic::Has_None_Arithmetic(5, 5.5); // false
                     [[maybe_unused]] auto noneArithmetic3 = common::variadic::Has_None_Arithmetic(true, false); // false
+                    
+                    [[maybe_unused]] auto foundPoint = common::lambda::FindSubPoint(points, Point{ 0, 0 }, Point{ 2, 1 }); // Point{ 2, 1 }
                 }
                 // custom
                 {
@@ -908,15 +926,96 @@ int main()
      matching - паттерн сопоставляющий типы, который можно рассматривать как обобщение оператора switch-case
      */
     {
-        using namespace matching;
         std::cout << "matching" << std::endl;
+        using namespace matching;
         
-        Match([](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
-              [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
-              [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
-              [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
-              [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
-              )(1, 1, 1);
+        /// C++11
+        {
+            std::cout << "C++11" << std::endl;
+            using namespace C11;
+        
+            Match([](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
+                  [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
+                  [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                  [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                  [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
+                  )(1, 1, 1);
+        }
+        /*
+         C++17: Примеси (mixIns) - это variadic CRTP, где шаблонный класс с заранее неизвестным числом аргументов наследуется от них.
+         Применение: с помощью примесей + std::visit c использованием lambda-функций можно извлекать значения из vector<variant<...>>
+         */
+        {
+            std::cout << "C++17" << std::endl;
+            using namespace C17;
+        
+            /// 1 Вариант
+            {
+                std::cout << "first implementation" << std::endl;
+                using namespace first_implementation;
+                
+                Match([](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
+                      [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
+                      [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                      [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                      [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
+                      )(1, 1, 1);
+            }
+            /// 2 Вариант
+            {
+                std::cout << "second implementation" << std::endl;
+                using namespace second_implementation;
+                
+                Match{[](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
+                      [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
+                      [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                      [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                      [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
+                }(1, 1, 1);
+            }
+            /// 3 Вариант
+            {
+                std::cout << "third implementation" << std::endl;
+                using namespace third_implementation;
+                
+                /// 1 Способ: обычный
+                {
+                    Match{[](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
+                          [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
+                          [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                          [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                          [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
+                    }(1, 1, 1);
+                }
+                
+                /// 2 Способ: std::variant + std::visit
+                {
+                    std::vector<std::variant<int, double, std::string>> vec = {10, 10.0, "str"};
+                    for (const auto& v : vec)
+                    {
+                        std::visit(Match{[](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
+                                         [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
+                                         [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                                         [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                                         [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
+                        }, v);
+                    }
+                }
+                /// 3 Способ: несколько std::variant + std::visit
+                {
+                    std::variant<int, double, std::string> var1, var2, var3;
+                    var1 = 10;
+                    var2 = 10.0;
+                    var3 = "str";
+                    std::visit(Match{[](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
+                                     [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
+                                     [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                                     [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                                     [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
+                    }, var1, var2, var3);
+                }
+            }
+        }
     }
     /*
      Tuple (Кортеж) - коллекция элементов с фиксированным размером, содержащая разнородные значения. Для реализации кортежа используется идиома Head/Tail с помощью Variadic Template - шаблон с заранее неизвестным числом аргументов.

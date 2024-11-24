@@ -56,14 +56,14 @@ namespace CRTP
         {
             NonCopyable() = default;
             NonCopyable(const NonCopyable&) = delete;
-            NonCopyable& operator = (const NonCopyable&) = delete;
+            NonCopyable& operator=(const NonCopyable&) = delete;
         };
 
         struct NonMoveable
         {
             NonMoveable() = default;
-            NonMoveable(NonMoveable&&) = delete;
-            NonMoveable& operator = (NonCopyable&&) = delete;
+            NonMoveable(NonMoveable&&) noexcept = delete;
+            NonMoveable& operator=(NonCopyable&&) noexcept = delete;
         };
 
         /*
@@ -72,7 +72,7 @@ namespace CRTP
         template<class Derived>
         struct Singleton : private NonCopyable, private NonMoveable // Делаем приватные конструкторы базовых классов
         {
-            static Derived &Instance() noexcept
+            static Derived &Instance()
             {
                 static Derived instance;
                 return instance;
@@ -90,8 +90,8 @@ namespace CRTP
     class Counter
     {
     public:
-        Counter() noexcept { ++_counter; }
-        ~Counter() noexcept { --_counter; }
+        Counter() { ++_counter; }
+        ~Counter(){ --_counter; }
         static size_t count() noexcept { return _counter; }
     private:
         inline static size_t _counter;
@@ -100,17 +100,17 @@ namespace CRTP
     template <typename T>
     class Equal
     {
-        friend bool operator==(const T& lhs, const T& rhs) { return lhs.equal_to(rhs); }
-        friend bool operator!=(const T& lhs, const T& rhs) { return !lhs.equal_to(rhs); }
+        friend bool operator==(const T& lhs, const T& rhs) noexcept { return lhs.equal_to(rhs); }
+        friend bool operator!=(const T& lhs, const T& rhs) noexcept { return !lhs.equal_to(rhs); }
     };
 
     template <typename T>
     class Compare
     {
-        friend bool operator<(const T& lhs, const T& rhs) { return lhs.less_than(rhs); }
-        friend bool operator<=(const T& lhs, const T& rhs) { return !lhs.less_than(rhs); }
-        friend bool operator>(const T& lhs, const T& rhs) { return lhs.less_than(rhs); }
-        friend bool operator>=(const T& lhs, const T& rhs) { return !lhs.less_than(rhs); }
+        friend bool operator<(const T& lhs, const T& rhs) noexcept { return lhs.less_than(rhs); }
+        friend bool operator<=(const T& lhs, const T& rhs) noexcept { return !lhs.less_than(rhs); }
+        friend bool operator>(const T& lhs, const T& rhs) noexcept { return lhs.less_than(rhs); }
+        friend bool operator>=(const T& lhs, const T& rhs) noexcept { return !lhs.less_than(rhs); }
     };
 
     template <template <typename> class... CRTPs>
@@ -119,12 +119,12 @@ namespace CRTP
         Variadic(int value = 0) : _value(value)
         {}
 
-        bool equal_to(const Variadic& other) const
+        bool equal_to(const Variadic& other) const noexcept
         {
             return _value == other._value;
         }
 
-        bool less_than(const Variadic& other) const
+        bool less_than(const Variadic& other) const noexcept
         {
             return _value < other._value;
         }

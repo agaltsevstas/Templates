@@ -32,7 +32,7 @@ namespace tuple
         class Tuple
         {};
 
-        /// Template argument deduction - способность шаблоннов определять тип передаваемых аргументов без явного указания типа: вместо foo<...>(...) можно foo(...). До C++17 при инстанцировании шаблона функции нужно было явно указывать типы аргументы: foo<...>(...).
+        /// CTAD (Сlass template argument deduction) - способность шаблонов определять тип передаваемых аргументов без явного указания типа: вместо foo<...>(...) можно foo(...). До C++17 при инстанцировании шаблона функции нужно было явно указывать типы аргументы: foo<...>(...).
         template <typename ...T> Tuple(T...) -> Tuple<T...>;
 
         /// Полная специализация для пустого tuple
@@ -73,7 +73,7 @@ namespace tuple
             _head(std::forward<UHead>(head)),
             _tail(std::forward<UTail>(tail)...) {}
             
-            constexpr size_t Size() const { return value; }
+            constexpr size_t Size() const noexcept { return value; }
         public:
             constexpr static size_t value = 1u + Tuple<Tail...>::value;
             
@@ -170,7 +170,7 @@ namespace tuple
             _head(std::forward<UHead>(head))
             {}
             
-            constexpr size_t Size() const { return value; }
+            constexpr size_t Size() const noexcept { return value; }
         public:
             constexpr static size_t value = 1u + Tuple<Tail...>::value;
             
@@ -195,7 +195,6 @@ namespace tuple
             [[no_unique_address]] Head _head;
         };
         
-        // template argument deduction guide
         template<typename ...T> Tuple(T...) -> Tuple<T...>;
 
         template<size_t index, typename Head, typename... Tail>
@@ -279,7 +278,7 @@ namespace tuple
             explicit Tuple(typename TupleTraits<Args>::ParamType... args):
             TupleBase<Args...>(args...) {}
             
-            constexpr size_t Size() const { return value; }
+            constexpr size_t Size() const noexcept { return value; }
         public:
             constexpr static size_t value = sizeof...(Args);
         };

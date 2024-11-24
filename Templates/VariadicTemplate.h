@@ -3,6 +3,7 @@
 
 /*
  Сайты: https://infotraining.bitbucket.io/cpp-adv/variadic-templates.html
+        https://www.fluentcpp.com/2018/06/22/variadic-crtp-opt-in-for-class-features-at-compile-time/
  */
 
 
@@ -75,60 +76,66 @@ namespace variadic_template
         print(Factors * args...);
     }
 
-    template <typename... Mixins>
-    class Mixin : public Mixins...
+    namespace mixins
     {
-    public:
-        Mixin(Mixins&&... mixins) : Mixins(mixins)...
-        {}
-    };
-
-    template <typename T>
-    class Counter
-    {
-    public:
-        Counter() noexcept { ++_counter; }
-        ~Counter() noexcept { --_counter; }
-        static size_t count() noexcept { return _counter; }
-    private:
-        inline static size_t _counter;
-    };
-
-    template <typename T>
-    class Equal
-    {
-        friend bool operator==(const T& lhs, const T& rhs) { return lhs.equal_to(rhs); }
-        friend bool operator!=(const T& lhs, const T& rhs) { return !lhs.equal_to(rhs); }
-    };
-
-    template <typename T>
-    class Compare
-    {
-        friend bool operator<(const T& lhs, const T& rhs) { return lhs.less_than(rhs); }
-        friend bool operator<=(const T& lhs, const T& rhs) { return !lhs.less_than(rhs); }
-        friend bool operator>(const T& lhs, const T& rhs) { return lhs.less_than(rhs); }
-        friend bool operator>=(const T& lhs, const T& rhs) { return !lhs.less_than(rhs); }
-    };
-
-    template <template <typename> class... CRTPs>
-    struct Variadic : public CRTPs<Variadic<CRTPs...>>...
-    {
-        Variadic(int value = 0) : _value(value)
-        {}
-
-        bool equal_to(const Variadic& other) const
+        template <typename... Mixins>
+        class Mixin : public Mixins...
         {
-            return _value == other._value;
-        }
+        public:
+            Mixin(Mixins&&... mixins) : Mixins(mixins)...
+            {}
+        };
 
-        bool less_than(const Variadic& other) const
+        // explicit deduction guide (not needed as of C++20)
+        template <typename ...Mixins> Mixin(Mixins...) -> Mixin<Mixins...>;
+
+        template <typename T>
+        class Counter
         {
-            return _value < other._value;
-        }
-        
-    private:
-        int _value;
-    };
+        public:
+            Counter() { ++_counter; }
+            ~Counter() { --_counter; }
+            static size_t count() noexcept { return _counter; }
+        private:
+            inline static size_t _counter;
+        };
+
+        template <typename T>
+        class Equal
+        {
+            friend bool operator==(const T& lhs, const T& rhs) noexcept { return lhs.equal_to(rhs); }
+            friend bool operator!=(const T& lhs, const T& rhs) noexcept { return !lhs.equal_to(rhs); }
+        };
+
+        template <typename T>
+        class Compare
+        {
+            friend bool operator<(const T& lhs, const T& rhs) noexcept { return lhs.less_than(rhs); }
+            friend bool operator<=(const T& lhs, const T& rhs) noexcept { return !lhs.less_than(rhs); }
+            friend bool operator>(const T& lhs, const T& rhs) noexcept { return lhs.less_than(rhs); }
+            friend bool operator>=(const T& lhs, const T& rhs) noexcept { return !lhs.less_than(rhs); }
+        };
+
+        template <template <typename> class... CRTPs>
+        struct Variadic : public CRTPs<Variadic<CRTPs...>>...
+        {
+            Variadic(int value = 0) : _value(value)
+            {}
+
+            bool equal_to(const Variadic& other) const noexcept
+            {
+                return _value == other._value;
+            }
+
+            bool less_than(const Variadic& other) const noexcept
+            {
+                return _value < other._value;
+            }
+            
+        private:
+            int _value;
+        };
+    }
 }
 
 #endif /* Arguments_h */

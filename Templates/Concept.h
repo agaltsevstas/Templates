@@ -23,7 +23,7 @@ namespace CONCEPT
         int x = 0;
         int y = 0;
 
-        auto operator<=>(const Point&) const = default; // Условие: без этого concept не будет работать
+        auto operator<=>(const Point&) const noexcept = default; // Условие: без этого concept не будет работать
 
         auto Сoefficient(auto сoefficient)
         {
@@ -209,6 +209,21 @@ namespace CONCEPT
                 return !(... || args);
             }
         }
+    
+        namespace lambda
+        {
+            template <typename VectorPoints, typename ...TPoints>
+            requires std::is_same_v<VectorPoints, std::vector<Point>> && ((std::is_same_v<TPoints, Point>) && ...)
+            Point FindSubPoint(const VectorPoints& points, TPoints&& ...subs)
+            {
+                auto contains_subpoints = [&subs...](const Point& point)
+                {
+                    return ((point == subs) || ...);
+                };
+                
+                return *std::find_if(points.begin(), points.end(), contains_subpoints);
+            }
+        }
     }
 
     namespace custom
@@ -280,7 +295,6 @@ namespace CONCEPT
     {
         namespace details
         {
-
             template<class T>
             concept HasBeginEnd = requires(const T& container) // Условие: проверка на контейнер
             {
