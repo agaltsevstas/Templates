@@ -73,7 +73,7 @@ namespace tuple
             _head(std::forward<UHead>(head)),
             _tail(std::forward<UTail>(tail)...) {}
             
-            constexpr size_t Size() const noexcept { return value; }
+            constexpr size_t Size() const { return value; }
         public:
             constexpr static size_t value = 1u + Tuple<Tail...>::value;
             
@@ -170,7 +170,7 @@ namespace tuple
             _head(std::forward<UHead>(head))
             {}
             
-            constexpr size_t Size() const noexcept { return value; }
+            constexpr size_t Size() const { return value; }
         public:
             constexpr static size_t value = 1u + Tuple<Tail...>::value;
             
@@ -278,7 +278,7 @@ namespace tuple
             explicit Tuple(typename TupleTraits<Args>::ParamType... args):
             TupleBase<Args...>(args...) {}
             
-            constexpr size_t Size() const noexcept { return value; }
+            constexpr size_t Size() const { return value; }
         public:
             constexpr static size_t value = sizeof...(Args);
         };

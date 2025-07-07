@@ -23,7 +23,7 @@ namespace CONCEPT
         int x = 0;
         int y = 0;
 
-        auto operator<=>(const Point&) const noexcept = default; // Условие: без этого concept не будет работать
+        auto operator<=>(const Point&) const = default; // Условие: без этого concept не будет работать
 
         auto Сoefficient(auto сoefficient)
         {

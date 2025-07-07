@@ -1,8 +1,9 @@
 #ifndef SFINAE_h
 #define SFINAE_h
 
-/// Сайты: https://stackoverflow.com/questions/74263416/question-about-has-const-iterator-has-begin-end
-//        https://stackoverflow.com/questions/9407367/determine-if-a-type-is-an-stl-container-at-compile-time
+/* Сайты: https://stackoverflow.com/questions/74263416/question-about-has-const-iterator-has-begin-end
+          https://stackoverflow.com/questions/9407367/determine-if-a-type-is-an-stl-container-at-compile-time
+ */
 
 // Лекция: https://www.youtube.com/watch?v=v49lAJXnnPM&t=1s&ab_channel=ComputerScienceCenter
 

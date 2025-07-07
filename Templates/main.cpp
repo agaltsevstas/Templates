@@ -31,9 +31,9 @@
         https://www.scs.stanford.edu/~dm/blog/param-pack.html
         https://stackoverflow.com/questions/2351148/explicit-template-instantiation-when-is-it-used
         https://gist.github.com/sergeysablin99/1eb61b51fb58d5ae0a58ac1424c249c6
+ CRTP, variadic: https://infotraining.bitbucket.io/cpp-adv/variadic-templates.html
+                 https://www.fluentcpp.com/2018/06/22/variadic-crtp-opt-in-for-class-features-at-compile-time/
  extern template : https://isocpp.org/wiki/faq/templates#separate-template-fn-defn-from-decl
- metafunction: https://habr.com/ru/articles/337590/
-               http://scrutator.me/post/2017/04/10/has_function_metaprogramming.aspx
  invoke, apply: http://scrutator.me/post/2018/05/25/cpp17_lang_features_p4.aspx
                 https://habr.com/ru/companies/pvs-studio/articles/340014/
                 https://habr.com/ru/companies/otus/articles/656363/
@@ -41,9 +41,13 @@
                 https://www.vishalchovatiya.com/variadic-template-cpp-implementing-unsophisticated-tuple/
                 https://www.itcodar.com/c-plus-1/template-tuple-calling-a-function-on-each-element.html
                 https://medium.com/@raghavmnnit/variadic-templates-and-function-arguments-part2-1d35d06730d9
- CRTP, variadic: https://infotraining.bitbucket.io/cpp-adv/variadic-templates.html
-                 https://www.fluentcpp.com/2018/06/22/variadic-crtp-opt-in-for-class-features-at-compile-time/
+ instantiation: Лекция (время 44:30): https://www.youtube.com/watch?v=G_jcBrrYPAs&ysclid=mct1fzo0rj301368439
+ metafunction: https://habr.com/ru/articles/337590/
+               http://scrutator.me/post/2017/04/10/has_function_metaprogramming.aspx
  matching: https://habr.com/ru/articles/282630/
+ SFINAE: Сайты: https://stackoverflow.com/questions/74263416/question-about-has-const-iterator-has-begin-end
+                https://stackoverflow.com/questions/9407367/determine-if-a-type-is-an-stl-container-at-compile-time
+         Лекция: https://www.youtube.com/watch?v=v49lAJXnnPM&t=1s&ab_channel=ComputerScienceCenter
  tuple: https://www.itcodar.com/c-plus-1/template-tuple-calling-a-function-on-each-element.html
         https://infotraining.bitbucket.io/cpp-adv/variadic-templates.html
         https://www.scs.stanford.edu/~dm/blog/param-pack.html
@@ -75,12 +79,12 @@
  - Размещение шаблонов в .h файлах может привести к загромождению размера кода и размера скомпилированного двоичного файла.
  2. Явное инстанцирование (explicit instantiation) с помощью резервированного слова template (обычно в .cpp файлах). Каждая единица трансляции транслируется отдельно, а потом всё линкуется. Инстанцирование шаблонов (подстановка) происходит до линковки. Компилятор при генерировании кода должен видеть определение шаблона (а не только объявление), так и определения типов, которые подставляются в шаблон. Поэтому если класс/функция инициализированы в .h файле, а реализация в .cpp файле, то при одновременной комплияции двух .cpp файлов компилятор не запомнит подставляемый тип в одном .cpp файла, где вызывается шаблон, во время компиляции другого .cpp файла, где находится реализация метода/класса. В .cpp файле, где реализация метода/класса нужно сделать явное инстанцирование.
  Плюсы:
- - cокрытие явной реализации класса/метода в .cpp файле
- - явное создание экземпляров позволяет сократить время компиляции
- - предотвращение переопределение объекта (экономит время и размер)
+   - Сокрытие явной реализации класса/метода в .cpp файле
+   - Предотвращение переопределение объекта (экономит время и размер)
  Минусы:
- - если не создать явное инстанцирование всех типов в .cpp файле, то будет ошибка: undefined reference.
- Дополнение: Явно инстанцированная шаблонная функция/класс могут иметь копии .cpp файлах, что может тормозить сам процесс компиляции и сборки. Можно указать компилятору не инстанцировать шаблон в данной единице трансляции, для этого перед инстанцированием указать extern - это уменьшает время компиляции.
+ - Если не создать явное инстанцирование всех типов в .cpp файле, то будет ошибка: undefined reference
+ - Явно инстанцированная шаблонная функция/класс могут иметь копии .cpp файлах, что может тормозить сам процесс компиляции и сборки
+ Дополнение: Явно инстанцированная шаблонная функция/класс могут иметь копии .cpp файлах, что может тормозить сам процесс компиляции и сборки. Можно указать явное объявление инстанциации с помощью extern в .h файле и одно определение в .cpp файле, и тогда компилятору не нужно будет инстанцировать шаблон в каждой единице трансляции, что уменьшает время компиляции.
  
  Компилятор в приоритете выбирает более специлизированный шаблон
  Специализации шаблонов по приоритетам:
@@ -405,12 +409,12 @@ int main()
             [[maybe_unused]] auto string_size = mixin.std::string::size();
             [[maybe_unused]] auto vector_size = mixin.std::vector<int>::size();
             
-            Mixin{[](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
-                  [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
-                  [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
-                  [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
-                  [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
-            }(1, 1, 1);
+//            Mixin{[](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
+//                  [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
+//                  [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+//                  [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+//                  [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
+//            }(1, 1, 1);
             
             CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic1(10);
             CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic2(20);

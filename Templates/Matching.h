@@ -28,7 +28,7 @@ namespace matching
             struct Match<T> : T
             {
                 template <class R>
-                Match(R&& r) noexcept : T(std::forward<R>(r)) {}
+                Match(R&& r) : T(std::forward<R>(r)) {}
                 using T::operator();
             };
         }
