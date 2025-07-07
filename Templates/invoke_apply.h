@@ -21,7 +21,7 @@ namespace invoke_apply
     struct Print
     {
         int GetValue() noexcept { return value; }
-        void SetValue(int iValue) noexcept { value = iValue; }
+        void SetValue(int iValue) { value = iValue; }
         
         void operator()(auto&&... args)
         {

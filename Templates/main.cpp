@@ -409,12 +409,12 @@ int main()
             [[maybe_unused]] auto string_size = mixin.std::string::size();
             [[maybe_unused]] auto vector_size = mixin.std::vector<int>::size();
             
-//            Mixin{[](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
-//                  [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
-//                  [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
-//                  [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
-//                  [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
-//            }(1, 1, 1);
+            Mixin{[](int number1, int number2) { std::cout << "int: " << number1 << " " << number2 << std::endl; },
+                  [](double number1, double number2) { std::cout << "double: " << number1 << " " << number2 << std::endl; },
+                  [](int number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                  [](double number1, auto number2)  { std::cout << "float: " << number1 << " " << number2 << std::endl; },
+                  [&](auto... values) { std::cout << "other types: "; ((std::cout << values << " "), ...) << std::endl; }
+            }(1, 1, 1);
             
             CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic1(10);
             CRTP::Variadic<CRTP::Counter, CRTP::Equal, CRTP::Compare> variadic2(20);

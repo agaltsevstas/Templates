@@ -72,7 +72,7 @@ namespace CRTP
         template<class Derived>
         struct Singleton : private NonCopyable, private NonMoveable // Делаем приватные конструкторы базовых классов
         {
-            static Derived &Instance() noexcept
+            static Derived &Instance()
             {
                 static Derived instance;
                 return instance;
@@ -90,8 +90,8 @@ namespace CRTP
     class Counter
     {
     public:
-        Counter() noexcept { ++_counter; }
-        ~Counter() noexcept { --_counter; }
+        Counter() { ++_counter; }
+        ~Counter() { --_counter; }
         static size_t count() noexcept { return _counter; }
     private:
         inline static size_t _counter;
